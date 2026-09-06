@@ -1,0 +1,53 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
+*.tsbuildinfo
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# local scaffolding not used by the Vite application
+/.openai/
+/app/
+/hooks/
+/next.config.ts
+/components/ui/*
+!/components/ui/alert.tsx
+!/components/ui/badge.tsx
+!/components/ui/button.tsx
+!/components/ui/card.tsx
+!/components/ui/slider.tsx
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local environment
+.env*
+
+# deployment and generated files
+.vercel
+next-env.d.ts
+/dist/
+/.wrangler/
+/outputs/
+/work/
