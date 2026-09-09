@@ -69,7 +69,8 @@ describe('AS chapter catalogue', () => {
         .getAllByRole('link')
         .map((link) => link.getAttribute('href')),
     ).toEqual(Array.from({ length: 4 }, (_, i) => `/chapters/${i + 9}`));
-    expect(within(paper1).getAllByText('1 live demo')).toHaveLength(2);
+    expect(within(paper1).getAllByText('1 live demo')).toHaveLength(1);
+    expect(within(paper1).getByText('2 live demos')).toBeTruthy();
     expect(within(paper1).getByText('Multimedia')).toBeTruthy();
     expect(
       within(paper2).getByText('Program Testing and Maintenance'),

@@ -26,6 +26,10 @@ Routes use a hash so direct links and refreshes work on GitHub Pages without ser
 
 The studio links back to its chapter and the catalogue. The old `#top` and `#code-lab` fragments still lead to the studio.
 
+## Packet & Frame Journey
+
+Chapter 2.1 includes `/#/chapters/2/packet-frame-journey`: a bilingual, step-by-step Ethernet / IPv4 / TCP encapsulation demonstration. Switch between same-subnet and routed delivery, play or scrub the sequence, and inspect header fields. The five-layer teaching view maps to the four TCP/IP layers. Routing changes Ethernet addresses, FCS, TTL and the IPv4 header checksum; this example excludes NAT, fragmentation and errors.
+
 ## Adding a demo
 
 1. Add its page under `src/pages/` and a route in `src/App.tsx`.

@@ -7,6 +7,7 @@ import {
   Circle,
   Gamepad2,
   Monitor,
+  Network,
   Square,
   VectorSquare,
 } from 'lucide-react';
@@ -25,7 +26,16 @@ function DemoCard({ demo }: { demo: Demo }) {
         className={`demo-preview demo-preview-${demo.id}`}
         aria-hidden="true"
       >
-        {demo.id === 'vector-drawing' ? (
+        {demo.id === 'packet-frame' ? (
+          <>
+            <div className="client-preview-art">
+              <Network size={56} />
+              <span>→</span>
+              <Network size={40} />
+            </div>
+            <span>DATA → SEGMENT → PACKET → FRAME</span>
+          </>
+        ) : demo.id === 'vector-drawing' ? (
           <>
             <div className="vector-preview-art">
               <Square size={94} />

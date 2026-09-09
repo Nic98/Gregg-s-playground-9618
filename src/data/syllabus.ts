@@ -140,7 +140,19 @@ export const chapters: Chapter[] = [
 ];
 export const vectorDemoPath = '/chapters/1/vector-drawing-studio';
 export const clientDemoPath = '/chapters/2/thin-thick-client-lab';
+export const packetDemoPath = '/chapters/2/packet-frame-journey';
 export const demos: Demo[] = [
+  {
+    id: 'packet-frame',
+    chapterId: 2,
+    sectionId: '2.1',
+    title: 'Packet & Frame Journey',
+    description:
+      'Follow data through the layers. Compare switch forwarding with router forwarding, and inspect how IP packets are wrapped in Ethernet frames. 逐层封装，逐跳传输。',
+    concepts: ['TCP/IP layers', 'Encapsulation', 'IP vs MAC'],
+    status: 'live',
+    path: packetDemoPath,
+  },
   {
     id: 'vector-drawing',
     chapterId: 1,
