@@ -14,7 +14,7 @@ The homepage and chapter navigation separate the two AS papers:
 Chapter and section names follow the AS subject content in the 2027–2029 syllabus, printed pages 14–31. Empty chapters remain browsable so future demos have a clear home.
 
 - **1.2 Multimedia → Vector Drawing Studio:** available now.
-- **2.1 Networks including the internet → Thin & Thick Client Lab:** planned; its card describes cloud gaming versus locally installed single-player gaming and cannot be launched yet.
+- **2.1 Networks including the internet → Thin & Thick Client Lab:** available now; play the same Packet Run maze through a simulated cloud stream and as an installed single-player game.
 
 Routes use a hash so direct links and refreshes work on GitHub Pages without server rewrites:
 
@@ -22,6 +22,7 @@ Routes use a hash so direct links and refreshes work on GitHub Pages without ser
 - Chapter: `/#/chapters/1`
 - Syllabus section: `/#/chapters/1#section-1-2`
 - Vector demo: `/#/chapters/1/vector-drawing-studio`
+- Thin/thick client demo: `/#/chapters/2/thin-thick-client-lab`
 
 The studio links back to its chapter and the catalogue. The old `#top` and `#code-lab` fragments still lead to the studio.
 
@@ -31,6 +32,17 @@ The studio links back to its chapter and the catalogue. The old `#top` and `#cod
 2. Add one entry to `demos` in `src/data/syllabus.ts`, with the matching `chapterId` and `sectionId`, a title, description and concepts. For an available demo use `status: 'live'` and its route as `path`; for an idea use `status: 'planned'` without a path.
 3. Link the demo back to its chapter/section. The catalogue counts, navigation indicators and chapter cards update from the registry automatically.
 4. Add an appropriate interaction check and run the checks below.
+
+## Thin & thick client lab
+
+Two copies of the same maze receive identical arrow-key, WASD or on-screen button input. Collect three packets and reach the exit. **Run example route** resets both games and supplies the same complete route; **Reset both** also cancels pending work.
+
+- Change round-trip network delay (0–800 ms). Cloud input travels to the server, game logic/rendering/encoding happens there, then a video frame returns for client decoding and display. The local game does not wait for this network.
+- Choose the same client hardware for both screens. The gaming PC uses 32 ms per local move and 12 ms for cloud decoding; the basic laptop uses 240 ms and 24 ms respectively. Server work remains 24 ms. These are illustrative timings, not measured benchmarks or frame-rate claims.
+- Disconnect during play. The cloud screen retains its last frame while the installed single-player game continues. Reconnection sends the last processed server state to the screen. Offline inputs and discarded in-flight transfers are not replayed.
+- Follow active processing stages, compare the server position with the displayed position, and read simulated input-to-display latency. Queued moves add waiting time; each side accepts up to 24 pending moves to bound rapid key input. Changes to timing settings apply to newly submitted moves.
+
+Both architectures are simulated locally; GitHub Pages needs no game server. The model does not measure the user's connection and does not simulate bandwidth, video quality, jitter or packet loss. A thin client still captures input and decodes video. Thick clients may also use networks; offline continuity here is specific to an installed single-player game. This lab compares processing allocation, not mutually exclusive device types.
 
 ## Vector studio teaching focus
 
@@ -78,7 +90,7 @@ npm run build
 
 The project includes a GitHub Actions workflow that checks, builds and publishes pushes to `main`. The repository is `Nic98/Gregg-s-playground-9618`. Set **Settings → Pages → Source: GitHub Actions** to enable publication. The workflow publishes the validated site when changes are pushed to `main`.
 
-Vite uses a relative asset base, so the build supports a GitHub Pages project path without hard-coding a repository name. The catalogue and vector studio have no server or account dependency. Fonts are self-hosted.
+Vite uses a relative asset base, so the build supports a GitHub Pages project path without hard-coding a repository name. The catalogue and both labs have no server or account dependency. Fonts are self-hosted.
 
 The AS catalogue footer links to the separate IGCSE 0478 Playground. Each repository retains its own syllabus and publishing schedule.
 
@@ -90,10 +102,15 @@ The AS catalogue footer links to the separate IGCSE 0478 Playground. Each reposi
 - `src/pages/CataloguePage.tsx`: Paper 1 and Paper 2 chapter catalogue
 - `src/pages/ChapterPage.tsx`: section groups and demo cards
 - `src/pages/VectorStudioPage.tsx`: vector classroom page and interactions
+- `src/pages/ClientLabPage.tsx`: shared game controls, experiments and processing comparison
+- `src/clientGame.ts`: common maze, movement and collection rules
+- `src/clientSimulation.ts`: deterministic cloud/local timing, queues and connection state
+- `src/components/ClientGameBoard.tsx`: shared accessible game display
+- `src/client-lab.css`: responsive two-screen game lab
 - `src/catalogue.css`: responsive catalogue and chapter layouts
 - `src/model.ts`: drawing model, geometry, SVG validation and export
 - `src/styles.css`: responsive studio layout
-- `tests/`: syllabus navigation, GitHub Pages hash routes, planned/empty chapters, geometry, input validation and linked classroom interaction checks
+- `tests/`: syllabus navigation, GitHub Pages hash routes, empty chapters, client processing and disconnection, geometry, input validation and linked classroom interaction checks
 - `.github/workflows/deploy-pages.yml`: static GitHub Pages deployment
 
 Fonts are distributed under SIL OFL 1.1. See `THIRD_PARTY_NOTICES.md` and `LICENSES/OFL-1.1.txt`.

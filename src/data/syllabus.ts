@@ -139,6 +139,7 @@ export const chapters: Chapter[] = [
   },
 ];
 export const vectorDemoPath = '/chapters/1/vector-drawing-studio';
+export const clientDemoPath = '/chapters/2/thin-thick-client-lab';
 export const demos: Demo[] = [
   {
     id: 'vector-drawing',
@@ -159,7 +160,8 @@ export const demos: Demo[] = [
     description:
       'Cloud gaming and a locally installed single-player game: compare where processing happens, then explore network and hardware dependence.',
     concepts: ['Thin client', 'Thick client', 'Client-side processing'],
-    status: 'planned',
+    status: 'live',
+    path: clientDemoPath,
   },
 ];
 export function chapterPath(id: number) {

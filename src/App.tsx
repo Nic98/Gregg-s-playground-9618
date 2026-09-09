@@ -4,7 +4,8 @@ import { CourseLayout } from './components/CourseLayout';
 import { CataloguePage } from './pages/CataloguePage';
 import { ChapterPage } from './pages/ChapterPage';
 import VectorStudioPage from './pages/VectorStudioPage';
-import { vectorDemoPath } from './data/syllabus';
+import ClientLabPage from './pages/ClientLabPage';
+import { clientDemoPath, vectorDemoPath } from './data/syllabus';
 import './catalogue.css';
 
 function RoutePosition() {
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path={vectorDemoPath} element={<VectorStudioPage />} />
+        <Route path={clientDemoPath} element={<ClientLabPage />} />
         <Route
           path="vector-drawing-studio"
           element={<Navigate to={vectorDemoPath} replace />}

@@ -69,8 +69,7 @@ describe('AS chapter catalogue', () => {
         .getAllByRole('link')
         .map((link) => link.getAttribute('href')),
     ).toEqual(Array.from({ length: 4 }, (_, i) => `/chapters/${i + 9}`));
-    expect(within(paper1).getByText('1 live demo')).toBeTruthy();
-    expect(within(paper1).getByText('1 demo in planning')).toBeTruthy();
+    expect(within(paper1).getAllByText('1 live demo')).toHaveLength(2);
     expect(within(paper1).getByText('Multimedia')).toBeTruthy();
     expect(
       within(paper2).getByText('Program Testing and Maintenance'),
@@ -115,7 +114,7 @@ describe('AS chapter catalogue', () => {
     ).toBeTruthy();
   });
 
-  it('keeps the planned thin/thick client demo in Networks without an active launch link', () => {
+  it('launches the thin/thick client game from Networks and returns to its chapter', () => {
     renderRoute('/chapters/2');
     const networks = screen.getByRole('region', {
       name: 'Networks including the internet',
@@ -125,8 +124,18 @@ describe('AS chapter catalogue', () => {
         name: 'Thin & Thick Client Lab',
       }),
     ).toBeTruthy();
-    expect(within(networks).getByText('In planning · 设计中')).toBeTruthy();
-    expect(within(networks).queryAllByRole('link')).toHaveLength(0);
+    fireEvent.click(
+      within(networks).getByRole('link', {
+        name: 'Open Thin & Thick Client Lab',
+      }),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Run example route' }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('link', { name: /2.1 Networks/ }));
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+      'Communication',
+    );
     expect(
       screen.queryByRole('heading', { name: 'Vector Drawing Studio' }),
     ).toBeNull();
