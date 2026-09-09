@@ -1,7 +1,15 @@
 import React from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import App from '../src/App';
+import VectorStudioPage from '../src/pages/VectorStudioPage';
+import { MemoryRouter } from 'react-router-dom';
+function App() {
+  return (
+    <MemoryRouter>
+      <VectorStudioPage />
+    </MemoryRouter>
+  );
+}
 afterEach(cleanup);
 
 describe('classroom learning interactions', () => {
