@@ -30,7 +30,7 @@
   margin: 9px 0;
   font-size: clamp(2rem, 3.3vw, 2.9rem);
 }
-.csma-intro > div > p:last-child {
+.csma-intro > div > p:not(.csma-overline) {
   font-size: 1rem;
   line-height: 1.6;
   color: #61707c;

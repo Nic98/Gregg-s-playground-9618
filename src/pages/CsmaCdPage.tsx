@@ -31,6 +31,7 @@ import {
   type WaitChoice,
 } from '../demos/csma';
 import '../csma-cd.css';
+import CsmaLimitations from '../components/CsmaLimitations';
 
 function EthernetChannel({
   state,
@@ -452,6 +453,12 @@ export default function CsmaCdPage() {
             <p className="csma-overline">COMMUNICATION · SHARED ETHERNET</p>
             <h1>CSMA/CD, in six steps.</h1>
             <p>Carrier Sense Multiple Access with Collision Detection</p>
+            <Link
+              className="csma-limit-jump"
+              to="/chapters/2/csma-cd#csma-limitations"
+            >
+              Explore the disadvantages ↓
+            </Link>
           </div>
           <span className="csma-simulation-label">
             <Radio size={16} />
@@ -587,6 +594,7 @@ export default function CsmaCdPage() {
           time slot. Changing the scenario restarts the run.
         </p>
         <BackoffPanel state={state} onChoice={change} />
+        <CsmaLimitations />
         <section className="csma-answer" aria-labelledby="csma-answer-title">
           <div>
             <p className="csma-overline">EXPLAIN THE PROCESS</p>

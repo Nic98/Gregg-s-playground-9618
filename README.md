@@ -57,6 +57,8 @@ The possible random values are 0–1 after collision 1, 0–3 after collision 2,
 
 The animation is a protocol-event model, not a timing-accurate Ethernet implementation. A successful frame occupies three illustrative slot times to show why a later retry may need to defer; propagation, jam and inter-frame timing are compressed. The explanations distinguish shared half-duplex Ethernet from switched full-duplex Ethernet and Wi-Fi.
 
+The **Explore the disadvantages** section adds four English experiments: force repeated collisions to inspect growing but capped random waits and the 16-attempt limit; step through repeated jam episodes and recover with different waits; change an urgent label without changing contention priority; and compare device counts and per-device traffic over 600 model ticks. The traffic experiment calculates arrivals, collisions, back-off, queues, delivery delay and frame outcomes in a reproducible simplified simulation. It distinguishes throughput from delivery share, excludes undelivered frames from average delay, and explicitly limits the lesson to shared half-duplex Ethernet. Timings are illustrative, not performance predictions.
+
 ## Thin & thick client lab
 
 Two copies of the same maze receive identical arrow-key, WASD or on-screen button input. Collect three packets and reach the exit. **Run example route** resets both games and supplies the same complete route; **Reset both** also cancels pending work.
