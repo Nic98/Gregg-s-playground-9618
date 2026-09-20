@@ -53,6 +53,33 @@ function renderRoute(path = '/') {
 }
 
 describe('AS chapter catalogue', () => {
+  it('opens the English CSMA/CD lab through its Pages link and returns to Networks', () => {
+    window.history.replaceState(
+      null,
+      '',
+      '/Gregg-s-playground-9618/#/chapters/2/csma-cd',
+    );
+    render(
+      <HashRouter>
+        <App />
+      </HashRouter>,
+    );
+    expect(
+      screen.getByRole('heading', { name: 'CSMA/CD, in six steps.' }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('link', { name: /2.1 Networks/ }));
+    const networks = screen.getByRole('region', {
+      name: 'Networks including the internet',
+    });
+    fireEvent.click(
+      within(networks).getByRole('link', { name: 'Open CSMA/CD: Six Steps' }),
+    );
+    expect(window.location.hash).toBe('#/chapters/2/csma-cd');
+    expect(
+      screen.getByRole('heading', { name: 'CSMA/CD, in six steps.' }),
+    ).toBeTruthy();
+  });
+
   it('groups all 12 chapter entries under the correct AS papers', () => {
     renderRoute();
     const paper1 = screen.getByRole('region', { name: 'Theory Fundamentals' });
@@ -70,7 +97,7 @@ describe('AS chapter catalogue', () => {
         .map((link) => link.getAttribute('href')),
     ).toEqual(Array.from({ length: 4 }, (_, i) => `/chapters/${i + 9}`));
     expect(within(paper1).getAllByText('1 live demo')).toHaveLength(1);
-    expect(within(paper1).getByText('2 live demos')).toBeTruthy();
+    expect(within(paper1).getByText('3 live demos')).toBeTruthy();
     expect(within(paper1).getByText('Multimedia')).toBeTruthy();
     expect(
       within(paper2).getByText('Program Testing and Maintenance'),

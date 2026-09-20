@@ -14,6 +14,7 @@ The homepage and chapter navigation separate the two AS papers:
 Chapter and section names follow the AS subject content in the 2027–2029 syllabus, printed pages 14–31. Empty chapters remain browsable so future demos have a clear home.
 
 - **1.2 Multimedia → Vector Drawing Studio:** available now.
+- **2.1 Networks including the internet → CSMA/CD: Six Steps:** an English-only shared Ethernet demonstration.
 - **2.1 Networks including the internet → Thin & Thick Client Lab:** available now; play the same Packet Run maze through a simulated cloud stream and as an installed single-player game.
 
 Routes use a hash so direct links and refreshes work on GitHub Pages without server rewrites:
@@ -22,6 +23,7 @@ Routes use a hash so direct links and refreshes work on GitHub Pages without ser
 - Chapter: `/#/chapters/1`
 - Syllabus section: `/#/chapters/1#section-1-2`
 - Vector demo: `/#/chapters/1/vector-drawing-studio`
+- CSMA/CD demo: `/#/chapters/2/csma-cd`
 - Thin/thick client demo: `/#/chapters/2/thin-thick-client-lab`
 
 The studio links back to its chapter and the catalogue. The old `#top` and `#code-lab` fragments still lead to the studio.
@@ -36,6 +38,16 @@ Chapter 2.1 includes `/#/chapters/2/packet-frame-journey`: a bilingual, step-by-
 2. Add one entry to `demos` in `src/data/syllabus.ts`, with the matching `chapterId` and `sectionId`, a title, description and concepts. For an available demo use `status: 'live'` and its route as `path`; for an idea use `status: 'planned'` without a path.
 3. Link the demo back to its chapter/section. The catalogue counts, navigation indicators and chapter cards update from the registry automatically.
 4. Add an appropriate interaction check and run the checks below.
+
+## CSMA/CD: Six Steps
+
+An English-only demonstration follows **Listen → Transmit → Detect collision → Stop → Wait → Retransmit**. Use **Next event** or **Play / Pause** to follow two workstations on one shared half-duplex Ethernet channel. Separate scenarios show that a busy channel prevents transmission and that one sender can succeed without collision handling.
+
+After a collision, both data frames are aborted and a jam signal is shown. Each workstation independently draws a random back-off. At step 5, teaching controls can redraw the waits, force equal waits (causing another collision), or force different waits (showing recovery). Retries always include carrier sense; an expired wait does not permit transmission while another frame occupies the channel. Either workstation can retry first.
+
+The possible random values are 0–1 after collision 1, 0–3 after collision 2, then 0–7. The range uses `2^min(n, 10) - 1` and each random value represents that many slot times. It is the **range**, not necessarily every individual draw, that increases. After 16 unsuccessful attempts the frames are abandoned. A table retains the choices made in each round.
+
+The animation is a protocol-event model, not a timing-accurate Ethernet implementation. A successful frame occupies three illustrative slot times to show why a later retry may need to defer; propagation, jam and inter-frame timing are compressed. The explanations distinguish shared half-duplex Ethernet from switched full-duplex Ethernet and Wi-Fi.
 
 ## Thin & thick client lab
 
@@ -94,13 +106,16 @@ npm run build
 
 The project includes a GitHub Actions workflow that checks, builds and publishes pushes to `main`. The repository is `Nic98/Gregg-s-playground-9618`. Set **Settings → Pages → Source: GitHub Actions** to enable publication. The workflow publishes the validated site when changes are pushed to `main`.
 
-Vite uses a relative asset base, so the build supports a GitHub Pages project path without hard-coding a repository name. The catalogue and both labs have no server or account dependency. Fonts are self-hosted.
+Vite uses a relative asset base, so the build supports a GitHub Pages project path without hard-coding a repository name. The catalogue and demos have no server or account dependency. Fonts are self-hosted.
 
 The AS catalogue footer links to the separate IGCSE 0478 Playground. Each repository retains its own syllabus and publishing schedule.
 
 ## Project map
 
 - `src/App.tsx`: course and demo routes
+- `src/pages/CsmaCdPage.tsx`: English six-step CSMA/CD classroom demonstration
+- `src/demos/csma.ts`: carrier sense, collision handling, random back-off and retry events
+- `src/csma-cd.css`: shared channel diagram and responsive lesson layout
 - `src/data/syllabus.ts`: chapter, section and demo registry
 - `src/components/CourseLayout.tsx`: shared chapter navigation
 - `src/pages/CataloguePage.tsx`: Paper 1 and Paper 2 chapter catalogue

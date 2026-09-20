@@ -6,7 +6,9 @@ import { ChapterPage } from './pages/ChapterPage';
 import VectorStudioPage from './pages/VectorStudioPage';
 import PacketJourneyPage from './pages/PacketJourneyPage';
 import ClientLabPage from './pages/ClientLabPage';
+import CsmaCdPage from './pages/CsmaCdPage';
 import {
+  csmaDemoPath,
   clientDemoPath,
   vectorDemoPath,
   packetDemoPath,
@@ -53,6 +55,7 @@ export default function App() {
         <Route path={vectorDemoPath} element={<VectorStudioPage />} />
         <Route path={packetDemoPath} element={<PacketJourneyPage />} />
         <Route path={clientDemoPath} element={<ClientLabPage />} />
+        <Route path={csmaDemoPath} element={<CsmaCdPage />} />
         <Route
           path="vector-drawing-studio"
           element={<Navigate to={vectorDemoPath} replace />}

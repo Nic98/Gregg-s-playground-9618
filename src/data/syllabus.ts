@@ -141,7 +141,19 @@ export const chapters: Chapter[] = [
 export const vectorDemoPath = '/chapters/1/vector-drawing-studio';
 export const clientDemoPath = '/chapters/2/thin-thick-client-lab';
 export const packetDemoPath = '/chapters/2/packet-frame-journey';
+export const csmaDemoPath = '/chapters/2/csma-cd';
 export const demos: Demo[] = [
+  {
+    id: 'csma-cd',
+    chapterId: 2,
+    sectionId: '2.1',
+    title: 'CSMA/CD: Six Steps',
+    description:
+      'Listen, transmit, detect a collision, stop, wait and retransmit. Explore a shared Ethernet channel and see why random back-off separates retries.',
+    concepts: ['Carrier sense', 'Collision detection', 'Random back-off'],
+    status: 'live',
+    path: csmaDemoPath,
+  },
   {
     id: 'packet-frame',
     chapterId: 2,

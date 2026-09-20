@@ -711,3 +711,13 @@
     min-height: 44px;
   }
 }
+
+.demo-preview-csma-cd {
+  background: #e4efdb;
+  color: #46642c;
+}
+.demo-preview-csma-cd > span {
+  text-align: center;
+  padding: 0 18px;
+  line-height: 1.6;
+}

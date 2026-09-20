@@ -10,6 +10,8 @@ import {
   Network,
   Square,
   VectorSquare,
+  Radio,
+  Zap,
 } from 'lucide-react';
 import {
   chapters,
@@ -26,7 +28,16 @@ function DemoCard({ demo }: { demo: Demo }) {
         className={`demo-preview demo-preview-${demo.id}`}
         aria-hidden="true"
       >
-        {demo.id === 'packet-frame' ? (
+        {demo.id === 'csma-cd' ? (
+          <>
+            <div className="client-preview-art">
+              <Radio size={42} />
+              <Zap size={38} />
+              <Radio size={42} />
+            </div>
+            <span>LISTEN → TRANSMIT → DETECT → STOP → WAIT → RETRY</span>
+          </>
+        ) : demo.id === 'packet-frame' ? (
           <>
             <div className="client-preview-art">
               <Network size={56} />
