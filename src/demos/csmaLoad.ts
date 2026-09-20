@@ -9,7 +9,21 @@ export interface LoadDevice {
   delivered: number;
   dropped: number;
 }
+export interface LoadSnapshot {
+  phase: ChannelTick;
+  senders: number[];
+  progress: number;
+  queues: number[];
+  waits: number[];
+  delivered: number;
+  generated: number;
+  pending: number;
+  dropped: number;
+  collisions: number;
+  averageDelay: number | null;
+}
 export interface LoadResult {
+  snapshots: LoadSnapshot[];
   devices: LoadDevice[];
   timeline: ChannelTick[];
   generated: number;
@@ -56,6 +70,29 @@ export function simulateLoad(
   let sender: LoadDevice | null = null;
   let dataTicksLeft = 0;
   let jamPending = false;
+  let colliders: number[] = [];
+  const snapshots: LoadSnapshot[] = [];
+  const record = (
+    phase: ChannelTick,
+    time: number,
+    senders: number[] = [],
+    progress = 0,
+  ) =>
+    snapshots.push({
+      phase,
+      senders,
+      progress,
+      queues: devices.map((device) => device.queue.length),
+      waits: devices.map((device) =>
+        device.queue.length ? Math.max(0, device.readyAt - time - 1) : 0,
+      ),
+      delivered,
+      generated,
+      dropped,
+      collisions,
+      pending: devices.reduce((sum, device) => sum + device.queue.length, 0),
+      averageDelay: delivered ? totalDelay / delivered : null,
+    });
 
   for (let time = 0; time < ticks; time++) {
     for (const device of devices) {
@@ -66,6 +103,7 @@ export function simulateLoad(
     }
     if (jamPending) {
       timeline.push('jam');
+      record('jam', time, colliders);
       jamPending = false;
       continue;
     }
@@ -75,6 +113,7 @@ export function simulateLoad(
       );
       if (ready.length > 1) {
         collisions++;
+        colliders = ready.map((device) => device.id);
         timeline.push('collision');
         jamPending = true;
         for (const device of ready) {
@@ -92,17 +131,21 @@ export function simulateLoad(
             device.readyAt = time + 2 + wait;
           }
         }
+        record('collision', time, colliders);
         continue;
       }
       if (!ready.length) {
         timeline.push('idle');
+        record('idle', time);
         continue;
       }
       sender = ready[0];
       dataTicksLeft = 6;
     }
+    const sendingId = sender.id;
     timeline.push('data');
     dataTicksLeft--;
+    const progress = (6 - dataTicksLeft) / 6;
     if (dataTicksLeft === 0) {
       const arrivedAt = sender.queue.shift()!;
       totalDelay += time + 1 - arrivedAt;
@@ -112,8 +155,10 @@ export function simulateLoad(
       delivered++;
       sender = null;
     }
+    record('data', time, [sendingId], progress);
   }
   return {
+    snapshots,
     devices,
     timeline,
     generated,

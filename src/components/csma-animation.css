@@ -1,0 +1,240 @@
+.csma-animation-controls {
+  margin: 20px 0 15px;
+  padding: 16px;
+  border: 1px solid #d8e1d6;
+  border-radius: 12px;
+  background: #f6f9f1;
+}
+.csma-animation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.csma-animation-buttons label {
+  margin-left: auto;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #4b5e49;
+}
+.csma-animation-buttons select {
+  padding: 8px;
+  border: 1px solid #becbb7;
+  border-radius: 6px;
+  background: white;
+  color: #31472d;
+}
+.csma-animation-scrub {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 15px;
+  font-size: 0.75rem;
+  color: #536750;
+}
+.csma-animation-scrub input {
+  flex: 1;
+  min-width: 50px;
+  accent-color: #688c39;
+  height: 24px;
+}
+.csma-motion-stage {
+  margin: 0;
+  background: #12232f;
+  border: 1px solid #304b5c;
+  border-radius: 15px;
+  overflow: hidden;
+}
+.csma-motion-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 23px 0;
+  color: #b9cddd;
+  font:
+    700 0.8rem ui-monospace,
+    monospace;
+  letter-spacing: 0.05em;
+}
+.csma-motion-heading strong {
+  color: #c5f390;
+  background: #2b4432;
+  padding: 8px 12px;
+  border-radius: 7px;
+}
+.motion-collision .csma-motion-heading strong,
+.motion-jam .csma-motion-heading strong,
+.motion-failed .csma-motion-heading strong {
+  color: #ffd4c7;
+  background: #663a36;
+}
+.csma-motion-stage svg {
+  display: block;
+  width: 100%;
+  max-height: 475px;
+}
+.csma-motion-stage figcaption {
+  padding: 18px 24px;
+  color: #e1eef5;
+  border-top: 1px solid #344b58;
+  background: #1b3240;
+  font-size: 1.04rem;
+  line-height: 1.6;
+  font-weight: 650;
+  min-height: 70px;
+}
+.csma-motion-counters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.csma-motion-counters > div {
+  background: #f0f4f6;
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+.csma-motion-counters span {
+  display: block;
+  color: #586c78;
+  font-size: 0.8rem;
+}
+.csma-motion-counters strong {
+  display: block;
+  margin-top: 8px;
+  color: #233d4d;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  font-variant-numeric: tabular-nums;
+}
+.csma-motion-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+.csma-motion-presets > span {
+  color: #65747b;
+  font-size: 0.75rem;
+}
+.csma-motion-presets .csma-urgent-control {
+  margin: 0 auto 0 0;
+}
+.csma-motion-lesson {
+  border-left: 4px solid #8bb151;
+  background: #f0f6e6;
+  border-radius: 5px;
+  padding: 16px 20px;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: #36532f;
+  margin-top: 18px;
+}
+.csma-motion-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.csma-motion-comparison > div {
+  border: 1px solid #cfdac7;
+  border-radius: 10px;
+  padding: 20px;
+}
+.csma-motion-comparison h4 {
+  margin: 0 0 12px;
+  color: #4b6840;
+  font-size: 0.95rem;
+}
+.csma-motion-comparison p {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+  color: #5e7380;
+  font-size: 0.83rem;
+}
+.csma-motion-comparison p strong {
+  font-size: 1.65rem;
+  color: #314c40;
+  font-variant-numeric: tabular-nums;
+}
+.csma-motion-comparison p b {
+  margin-left: auto;
+  color: #446430;
+  font-size: 1.25rem;
+}
+.csma-motion-comparison small {
+  display: block;
+  margin-top: 10px;
+  color: #576c7a;
+  font-size: 0.8rem;
+}
+.csma-motion-meter {
+  height: 9px;
+  background: #e5eadf;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.csma-motion-meter span {
+  display: block;
+  height: 100%;
+  background: #6f924c;
+}
+@media (max-width: 700px) {
+  .csma-animation-buttons label {
+    width: 100%;
+    margin: 0;
+  }
+  .csma-animation-scrub {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .csma-animation-scrub input {
+    width: 100%;
+    flex-basis: 100%;
+  }
+  .csma-motion-heading {
+    padding: 13px 12px 0;
+    font-size: 0.65rem;
+  }
+  .csma-motion-heading strong {
+    padding: 7px 8px;
+  }
+  .csma-motion-stage figcaption {
+    padding: 14px;
+    font-size: 0.9rem;
+  }
+  .csma-motion-counters {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+  .csma-motion-counters > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .csma-motion-counters strong {
+    margin: 0;
+    font-size: 1.05rem;
+    text-align: right;
+  }
+  .csma-motion-comparison {
+    grid-template-columns: 1fr;
+  }
+}
+
+.csma-motion-stage figcaption small {
+  display: block;
+  margin-top: 6px;
+  color: #bfd1dd;
+  font-size: 0.76rem;
+  font-weight: 500;
+}

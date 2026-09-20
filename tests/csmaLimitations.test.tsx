@@ -1,88 +1,110 @@
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  act,
   cleanup,
   fireEvent,
   render,
   screen,
-  within,
 } from '@testing-library/react';
 import CsmaLimitations from '../src/components/CsmaLimitations';
 
+beforeEach(() => vi.useFakeTimers());
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.useRealTimers();
 });
-const choose = (name: string) =>
+const click = (name: string) =>
   fireEvent.click(screen.getByRole('button', { name: new RegExp(name) }));
+const tick = (ms: number) =>
+  act(() => {
+    vi.advanceTimersByTime(ms);
+  });
+const timeline = () =>
+  screen.getByRole('slider', {
+    name: 'Animation timeline',
+  }) as HTMLInputElement;
 
-describe('CSMA/CD disadvantage experiments', () => {
-  it('caps back-off and stops the frame after 16 failed attempts', () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0);
+describe('animated CSMA/CD disadvantages', () => {
+  it('moves packets when playing and freezes both time and the SVG when paused', () => {
     const { container } = render(<CsmaLimitations />);
-    for (let i = 1; i < 10; i++) choose('Force another collision');
-    expect(screen.getByText('0–1023 slots')).toBeTruthy();
-    choose('Force another collision');
-    expect(screen.getByText('0–1023 slots')).toBeTruthy();
-    for (let i = 11; i < 16; i++) choose('Force another collision');
-    expect(screen.getByText('Abandoned')).toBeTruthy();
-    expect(
-      screen.getByRole('button', { name: /Force another collision/ }),
-    ).toBeDisabled();
-    expect(screen.getByRole('status').textContent).toContain(
-      'not retried forever',
+    click('Play animation');
+    tick(1500);
+    const elapsed = timeline().value;
+    const picture = container.querySelector(
+      '.csma-motion-stage svg',
+    )!.innerHTML;
+    expect(Number(elapsed)).toBeGreaterThan(0);
+    click('Pause animation');
+    tick(10000);
+    expect(timeline().value).toBe(elapsed);
+    expect(container.querySelector('.csma-motion-stage svg')!.innerHTML).toBe(
+      picture,
     );
-    choose('Reset waits');
-    expect(screen.getByText('1 / 16')).toBeTruthy();
+    click('Step forward');
+    expect(Number(timeline().value)).toBeGreaterThan(Number(elapsed));
+    click('Jump to retry limit');
+    expect(screen.getByText('FRAME ABANDONED')).toBeTruthy();
+    expect(
+      screen.getByText('16 failed attempts. These frames are abandoned.'),
+    ).toBeTruthy();
     expect(container.textContent).not.toMatch(/[\u3400-\u9fff]/);
   });
-  it('shows jam episodes without delivery and allows recovery through different waits', () => {
+  it('can compare repeated jams with successful retry recovery', () => {
     render(<CsmaLimitations />);
-    choose('Repeated jams');
-    for (let i = 0; i < 3; i++) choose('Next channel event');
-    expect(screen.getByText('JAM SIGNAL')).toBeTruthy();
+    click('Repeated jams');
+    for (let i = 0; i < 3; i++) click('Step forward');
+    expect(screen.getAllByText('JAM SIGNAL').length).toBeGreaterThan(0);
     expect(screen.getByText('0 / 2')).toBeTruthy();
-    choose('Next channel event');
-    choose('Separate the retries');
-    for (let i = 0; i < 5; i++) choose('Next channel event');
+    click('Compare: different waits');
+    fireEvent.change(timeline(), { target: { value: timeline().max } });
     expect(screen.getByText('2 / 2')).toBeTruthy();
-    expect(
-      screen.getByRole('button', { name: /Next channel event/ }),
-    ).toBeDisabled();
   });
-  it('keeps access order unchanged when only urgency changes and explains ties', () => {
+  it('does not change access order or restart playback when urgency changes', () => {
     render(<CsmaLimitations />);
-    choose('No priority');
-    expect(screen.getByRole('status').textContent).toContain(
-      'Device B retries first (routine)',
-    );
-    fireEvent.change(screen.getByLabelText('Device carrying urgent data'), {
+    click('No priority');
+    click('Pause animation');
+    click('Step forward');
+    const position = timeline().value;
+    fireEvent.change(screen.getByLabelText('Urgent device'), {
       target: { value: 'B' },
     });
-    expect(screen.getByRole('status').textContent).toContain(
-      'Device B retries first (urgent)',
-    );
-    vi.spyOn(Math, 'random').mockReturnValue(0);
-    choose('Draw new waits');
-    expect(screen.getByRole('status').textContent).toContain('Equal waits');
+    expect(timeline().value).toBe(position);
+    expect(screen.getByText(/Device B goes first/)).toBeTruthy();
+    expect(screen.getByText(/shorter wait, not its urgent label/)).toBeTruthy();
   });
-  it('updates network results and clears heavy queues when selecting the quiet preset', () => {
+  it('animates load from zero and resets time and queues when settings change', () => {
     render(<CsmaLimitations />);
-    choose('More traffic');
-    choose('Busy network');
-    const table = screen.getByRole('table');
-    const row = within(table).getByRole('row', {
-      name: /Frames still waiting/,
-    });
-    const cells = within(row).getAllByRole('cell');
-    expect(Number(cells[1].textContent)).toBeGreaterThan(
-      Number(cells[0].textContent),
-    );
-    choose('Quiet network');
-    const quietCells = within(
-      screen.getByRole('row', { name: /Frames still waiting/ }),
-    ).getAllByRole('cell');
-    expect(quietCells[1].textContent).toBe(quietCells[0].textContent);
+    click('More traffic');
+    click('Busy network');
+    expect(timeline().value).toBe('0');
+    tick(5000);
+    expect(Number(timeline().value)).toBeGreaterThan(0);
+    click('Show end of run');
+    expect(screen.getByText('600 / 600')).toBeTruthy();
+    const counters = screen.getByText(
+      'Frames awaiting delivery',
+    ).parentElement!;
+    expect(
+      Number(counters.querySelector('strong')!.textContent),
+    ).toBeGreaterThan(100);
+    click('Quiet network');
+    expect(timeline().value).toBe('0');
+    expect(
+      screen
+        .getByText('Frames awaiting delivery')
+        .parentElement!.querySelector('strong')!.textContent,
+    ).toBe('0');
+  });
+  it('cancels the previous replay when switching experiments', () => {
+    render(<CsmaLimitations />);
+    click('Play animation');
+    tick(3000);
+    click('No priority');
+    click('Pause animation');
+    tick(10000);
+    expect(timeline().value).toBe('0');
   });
 });
