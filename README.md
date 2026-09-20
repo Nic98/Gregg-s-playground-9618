@@ -14,6 +14,7 @@ The homepage and chapter navigation separate the two AS papers:
 Chapter and section names follow the AS subject content in the 2027–2029 syllabus, printed pages 14–31. Empty chapters remain browsable so future demos have a clear home.
 
 - **1.2 Multimedia → Vector Drawing Studio:** available now.
+- **2.1 Networks including the internet → Subnetting Lab:** IPv4 subnet masks, network IDs, subnet division and past-paper practice.
 - **2.1 Networks including the internet → CSMA/CD: Six Steps:** an English-only shared Ethernet demonstration.
 - **2.1 Networks including the internet → Thin & Thick Client Lab:** available now; play the same Packet Run maze through a simulated cloud stream and as an installed single-player game.
 
@@ -23,6 +24,7 @@ Routes use a hash so direct links and refreshes work on GitHub Pages without ser
 - Chapter: `/#/chapters/1`
 - Syllabus section: `/#/chapters/1#section-1-2`
 - Vector demo: `/#/chapters/1/vector-drawing-studio`
+- Subnetting lab: `/#/chapters/2/subnetting-lab`
 - CSMA/CD demo: `/#/chapters/2/csma-cd`
 - Thin/thick client demo: `/#/chapters/2/thin-thick-client-lab`
 
@@ -31,6 +33,12 @@ The studio links back to its chapter and the catalogue. The old `#top` and `#cod
 ## Packet & Frame Journey
 
 Chapter 2.1 includes `/#/chapters/2/packet-frame-journey`: a bilingual, step-by-step Ethernet / IPv4 / TCP encapsulation demonstration. Switch between same-subnet and routed delivery, play or scrub the sequence, and inspect header fields. The five-layer teaching view maps to the four TCP/IP layers. Routing changes Ethernet addresses, FCS, TTL and the IPv4 header checksum; this example excludes NAT, fragmentation and errors.
+
+## Subnetting Lab
+
+Chapter 2.1 includes `/#/chapters/2/subnetting-lab`. The supplied English HTML lab is preserved in `public/labs/subnetting_as9618_lab.html` and displayed in an isolated frame so its styles and section anchors work independently of the catalogue. The page provides a return link to Networks and a link to open the lab in a separate tab.
+
+Its eight sections cover IPv4 structure, masks and prefixes, same-subnet comparisons, LAN examples, dividing a /24, trade-offs, exam focus and past-paper practice with expandable answers. Prefix controls and IP inputs calculate network IDs and address ranges in the browser; no server is required.
 
 ## Adding a demo
 

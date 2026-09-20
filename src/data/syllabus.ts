@@ -142,7 +142,19 @@ export const vectorDemoPath = '/chapters/1/vector-drawing-studio';
 export const clientDemoPath = '/chapters/2/thin-thick-client-lab';
 export const packetDemoPath = '/chapters/2/packet-frame-journey';
 export const csmaDemoPath = '/chapters/2/csma-cd';
+export const subnettingDemoPath = '/chapters/2/subnetting-lab';
 export const demos: Demo[] = [
+  {
+    id: 'subnetting',
+    chapterId: 2,
+    sectionId: '2.1',
+    title: 'Subnetting Lab',
+    description:
+      'Explore IPv4 addresses and subnet masks, compare network IDs and divide a /24 network. Practise with worked examples and past-paper questions.',
+    concepts: ['Subnet masks', 'Network IDs', 'CIDR prefixes'],
+    status: 'live',
+    path: subnettingDemoPath,
+  },
   {
     id: 'csma-cd',
     chapterId: 2,

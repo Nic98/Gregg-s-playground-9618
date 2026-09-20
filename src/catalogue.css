@@ -460,6 +460,10 @@
   align-self: flex-end;
   color: #625288;
 }
+.demo-preview-subnetting {
+  background: #e5edff;
+  color: #315bb0;
+}
 .demo-preview-thin-thick-clients {
   background: #e8edf3;
   color: #526678;

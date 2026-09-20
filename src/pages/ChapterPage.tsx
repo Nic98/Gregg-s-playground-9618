@@ -8,6 +8,7 @@ import {
   Gamepad2,
   Monitor,
   Network,
+  Split,
   Square,
   VectorSquare,
   Radio,
@@ -28,7 +29,16 @@ function DemoCard({ demo }: { demo: Demo }) {
         className={`demo-preview demo-preview-${demo.id}`}
         aria-hidden="true"
       >
-        {demo.id === 'csma-cd' ? (
+        {demo.id === 'subnetting' ? (
+          <>
+            <div className="client-preview-art">
+              <Network size={44} />
+              <Split size={34} />
+              <Network size={44} />
+            </div>
+            <span>IP ADDRESS + SUBNET MASK → NETWORK ID</span>
+          </>
+        ) : demo.id === 'csma-cd' ? (
           <>
             <div className="client-preview-art">
               <Radio size={42} />

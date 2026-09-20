@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AS 9618 subnetting interactive lesson: prefix, subnet mask, network ID, LAN comparison and exam technique.">
+  <title>AS 9618 Subnetting Lab</title>
+  <style>
+    :root{
+      --ink:#172033;--muted:#5e6878;--paper:#fff;--page:#f3f5f7;--line:#d8dde5;
+      --blue:#3158c8;--blue-pale:#eaf0ff;--green:#187451;--green-pale:#e8f6ef;
+      --orange:#a7580a;--orange-pale:#fff1de;--red:#a93636;--red-pale:#fff0ef;
+      --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}
+    body{margin:0;background:var(--page);color:var(--ink);font:17px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+    button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+    code,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}.shell{width:min(1180px,calc(100% - 40px));margin:auto}
+    .top{background:#121928;color:white;border-bottom:4px solid #9fd846;padding:26px 0 22px}.top-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:30px}.eyebrow{margin:0 0 7px;color:#9fd846;font-size:13px;font-weight:800;letter-spacing:.12em}.top h1{font-size:clamp(30px,4.5vw,52px);line-height:1.05;margin:0}.top p:last-child{margin:12px 0 0;color:#cbd2df}.course-tag{border:1px solid #526078;border-radius:8px;padding:10px 13px;font:700 14px var(--mono);white-space:nowrap}
+    .nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}.nav-inner{display:flex;gap:5px;overflow-x:auto;padding:10px 0}.nav a{color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;padding:8px 11px;border-radius:7px;white-space:nowrap}.nav a:hover{background:var(--blue-pale);color:var(--blue)}
+    main{padding:30px 0 50px}.section{background:var(--paper);border:1px solid var(--line);border-radius:15px;margin-bottom:22px;overflow:hidden}.section-head{padding:25px 28px 18px;border-bottom:1px solid var(--line)}.section-no{font:750 13px var(--mono);color:var(--blue);letter-spacing:.08em}.section h2{font-size:clamp(25px,3vw,34px);line-height:1.2;margin:4px 0 8px}.section-head p{margin:0;color:var(--muted);max-width:850px}.content{padding:26px 28px}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{border:1px solid var(--line);border-radius:11px;padding:18px;background:#fafbfc}.card h3{font-size:19px;margin:0 0 8px}.card p:last-child{margin-bottom:0}.label{display:block;color:var(--muted);font-size:13px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}.big-code{font:750 clamp(21px,3vw,30px)/1.35 var(--mono);overflow-wrap:anywhere}.blue{color:var(--blue)}.green{color:var(--green)}.orange{color:var(--orange)}
+    .structure{display:grid;grid-template-columns:1.25fr auto 1fr;gap:0;align-items:stretch;margin:22px 0}.structure-part{padding:22px;border:2px solid var(--blue);background:var(--blue-pale)}.structure-part:first-child{border-radius:12px 0 0 12px}.structure-part.host{border-color:var(--green);background:var(--green-pale);border-radius:0 12px 12px 0}.structure-plus{display:flex;align-items:center;padding:0 13px;font-size:28px;font-weight:700}.structure-part strong{display:block;font:750 24px var(--mono);margin:5px 0}.note{border-left:4px solid var(--blue);background:var(--blue-pale);border-radius:8px;padding:14px 17px;margin-top:18px}.note.warning{border-color:var(--orange);background:var(--orange-pale)}.note.success{border-color:var(--green);background:var(--green-pale)}
+    .controls{display:flex;gap:13px;align-items:end;flex-wrap:wrap;margin-bottom:23px}.field{display:grid;gap:6px;min-width:190px}.field label{font-size:14px;font-weight:750}.field input,.field select{min-height:45px;border:1px solid #aab4c2;border-radius:8px;background:#fff;padding:8px 11px;font-family:var(--mono)}.field input{width:210px}.button{min-height:45px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:9px 15px;font-weight:750}.button:hover{border-color:var(--blue);color:var(--blue)}.button.primary{background:var(--blue);border-color:var(--blue);color:white}.prefix-choice{display:flex;gap:7px;flex-wrap:wrap}.prefix-choice button[aria-pressed="true"]{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .mask-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.metric{border:1px solid var(--line);border-radius:9px;padding:13px;background:#fafbfc}.metric span{display:block;color:var(--muted);font-size:13px}.metric strong{font:750 18px var(--mono);overflow-wrap:anywhere}.bit-board{overflow-x:auto;padding-bottom:4px}.bits{display:grid;grid-template-columns:repeat(32,26px);gap:3px;min-width:925px}.bit{height:39px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:var(--green-pale);color:var(--green);font:750 17px var(--mono);border:1px solid #b8dfcf}.bit.net{background:var(--blue-pale);color:var(--blue);border-color:#bbcaf1}.bit.octet{margin-left:8px}.bit.boundary{box-shadow:inset 4px 0 var(--ink)}.bit-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;margin:11px 0}.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px}.swatch.net{background:var(--blue)}.swatch.host{background:var(--green)}
+    .and-table{width:100%;border-collapse:collapse;margin-top:18px;font-family:var(--mono)}.and-table th,.and-table td{border-bottom:1px solid var(--line);padding:11px;text-align:left}.and-table th{font-family:system-ui;font-size:14px;color:var(--muted)}.binary{letter-spacing:.06em;overflow-wrap:anywhere}.answer-panel{border:2px solid var(--line);border-radius:12px;padding:19px;margin-top:18px}.answer-panel.same{border-color:var(--green);background:var(--green-pale)}.answer-panel.different{border-color:var(--orange);background:var(--orange-pale)}.answer-panel h3{margin:0 0 5px}.answer-panel p{margin:0}.error{color:var(--red);background:var(--red-pale);border-radius:8px;padding:12px 14px;margin-top:15px}
+    .route{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center;margin-top:18px}.node{border:1px solid var(--line);border-radius:10px;background:#fafbfc;padding:15px;text-align:center}.node strong,.node code{display:block}.node.router{background:var(--orange-pale);border-color:#e2bd8e}.arrow{font-size:24px;color:var(--muted)}
+    .lan-map{display:grid;grid-template-columns:1fr 130px 1fr;gap:16px;align-items:stretch}.lan{border:2px solid var(--blue);background:var(--blue-pale);border-radius:12px;padding:18px}.lan.other{border-color:var(--orange);background:var(--orange-pale)}.lan h3{margin:0 0 4px}.lan .network-id{font:750 21px var(--mono);margin-bottom:15px}.devices{display:grid;gap:8px}.device{border:1px solid var(--line);background:white;border-radius:7px;padding:10px 12px;text-align:left;font-family:var(--mono)}.device[aria-pressed="true"]{box-shadow:inset 5px 0 var(--green);border-color:var(--green)}.router-box{align-self:center;text-align:center;border:2px solid var(--orange);border-radius:12px;padding:15px 8px;background:#fff}.router-box strong{display:block}.device-result{margin-top:18px;min-height:76px}
+    .split-controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:17px}.split-controls button[aria-pressed="true"]{background:var(--blue);color:white;border-color:var(--blue)}.address-bar{display:flex;min-height:128px;border:1px solid #9da9b8;border-radius:10px;overflow-x:auto}.subnet-block{flex:1;min-width:150px;border-right:2px solid white;padding:14px 9px;display:flex;flex-direction:column;justify-content:center;text-align:center;background:var(--blue-pale)}.subnet-block:nth-child(even){background:#dce6ff}.subnet-block:last-child{border-right:0}.subnet-block strong{font:750 18px var(--mono)}.subnet-block span{font-size:13px;color:var(--muted)}
+    .impact{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}.impact article{border-radius:11px;padding:19px}.impact .advantages{background:var(--green-pale);border:1px solid #b4dec9}.impact .disadvantages{background:var(--orange-pale);border:1px solid #ebc99f}.impact h3{margin-top:0}.impact li{margin:8px 0}.comparison{width:100%;border-collapse:collapse}.comparison th,.comparison td{border:1px solid var(--line);padding:11px 13px;text-align:left;vertical-align:top}.comparison th{background:#f1f3f6}.comparison td:first-child{font-weight:700}.exam-card{border-top:4px solid var(--blue);background:#fafbfc;border-radius:8px;padding:18px}.exam-card h3{margin-top:0}.exam-card blockquote{margin:12px 0 0;border-left:3px solid var(--line);padding-left:14px;color:#303a4c}.checklist{display:grid;gap:10px}.check{display:flex;gap:11px;align-items:flex-start}.check b{color:var(--blue);font-family:var(--mono)}
+    .paper-list{display:grid;gap:16px}.past-paper{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fafbfc}.paper-meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:12px 17px;border-bottom:1px solid var(--line);font:700 13px var(--mono);color:var(--muted)}.marks{margin-left:auto;color:var(--blue)}.question{padding:18px 19px}.question p:first-child{margin-top:0}.question p:last-child{margin-bottom:0}.question table{margin:12px 0 0}.past-paper details{border-top:1px solid var(--line);background:#fff}.past-paper summary{padding:14px 18px;font-weight:750;color:var(--blue);cursor:pointer}.mark-answer{padding:0 19px 18px}.mark-answer ul{margin-bottom:0}.source-note{font-size:14px;color:var(--muted);margin-top:18px}.source-note a{color:var(--blue)}
+    footer{padding:24px 0 40px;color:var(--muted);font-size:14px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:850px){.grid-3,.grid-2,.impact{grid-template-columns:1fr}.mask-summary{grid-template-columns:1fr 1fr}.lan-map{grid-template-columns:1fr}.router-box{width:150px;justify-self:center}.route{grid-template-columns:1fr}.arrow{transform:rotate(90deg);text-align:center}.top-inner{display:block}.course-tag{display:inline-block;margin-top:16px}}
+    @media(max-width:560px){.shell{width:min(100% - 24px,1180px)}.content,.section-head{padding:20px 17px}.mask-summary{grid-template-columns:1fr}.structure{grid-template-columns:1fr;gap:8px}.structure-part:first-child,.structure-part.host{border-radius:10px}.structure-plus{justify-content:center}.field,.field input{width:100%}.course-tag{white-space:normal}.comparison{font-size:14px}.comparison th,.comparison td{padding:8px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="shell top-inner">
+      <div><p class="eyebrow">CAMBRIDGE INTERNATIONAL AS LEVEL · 9618</p><h1>Subnetting Lab</h1><p>Use a subnet mask to identify network IDs, compare devices and divide an IPv4 network.</p></div>
+      <div class="course-tag">Communication · Networks</div>
+    </div>
+  </header>
+  <nav class="nav" aria-label="Lesson sections"><div class="shell nav-inner">
+    <a href="#structure">1 Structure</a><a href="#mask">2 Mask &amp; prefix</a><a href="#compare">3 Same network?</a><a href="#lan">4 LAN example</a><a href="#split">5 Subnet a /24</a><a href="#tradeoffs">6 Evaluation</a><a href="#exam">7 Exam focus</a><a href="#practice">8 Past papers</a>
+  </div></nav>
+
+  <main class="shell">
+    <section class="section" id="structure">
+      <header class="section-head"><span class="section-no">01 · STRUCTURE</span><h2>How subnetting is structured</h2><p>Subnetting divides one IP network into smaller logical networks. A subnet mask separates the network part from the host part of a 32-bit IPv4 address.</p></header>
+      <div class="content">
+        <div class="structure" aria-label="IPv4 address structure">
+          <div class="structure-part"><span class="label">Network / subnet part</span><strong>Shared by the subnet</strong><span>Identifies the network to which the device belongs.</span></div>
+          <div class="structure-plus">+</div>
+          <div class="structure-part host"><span class="label">Host part</span><strong>Unique within the subnet</strong><span>Identifies one device interface in that subnet.</span></div>
+        </div>
+        <div class="grid-3">
+          <article class="card"><span class="label">IP address</span><h3>32-bit logical address</h3><p><code>192.168.10.34</code> is written in dotted decimal as four 8-bit octets.</p></article>
+          <article class="card"><span class="label">Subnet mask</span><h3>32-bit bit mask</h3><p>Consecutive <code>1</code>s identify network bits. The remaining <code>0</code>s identify host bits.</p></article>
+          <article class="card"><span class="label">Network ID</span><h3>IP address AND subnet mask</h3><p>All devices in one subnet produce the same network ID when the same mask is applied.</p></article>
+        </div>
+        <div class="note"><strong>Exam definition:</strong> subnetting is the process of dividing a network into smaller subnetworks.</div>
+      </div>
+    </section>
+
+    <section class="section" id="mask">
+      <header class="section-head"><span class="section-no">02 · BIT MASK &amp; PREFIX</span><h2>What do the prefix and subnet mask do?</h2><p>Select a prefix to see its dotted-decimal mask and the number of addresses in the subnet.</p></header>
+      <div class="content">
+        <div class="controls"><div class="field"><label>Choose a prefix</label><div class="prefix-choice" id="prefixButtons" aria-label="Choose a prefix"></div></div></div>
+        <div class="mask-summary">
+          <div class="metric"><span>CIDR prefix</span><strong id="prefixText">/26</strong></div>
+          <div class="metric"><span>Dotted-decimal mask</span><strong id="maskText">255.255.255.192</strong></div>
+          <div class="metric"><span>Total addresses</span><strong id="totalText">64</strong></div>
+          <div class="metric"><span>Usable host addresses</span><strong id="usableText">62</strong></div>
+        </div>
+        <div class="bit-board" aria-label="32 mask bits"><div class="bits" id="maskBits"></div></div>
+        <div class="bit-legend"><span><i class="swatch net"></i>network bits = 1</span><span><i class="swatch host"></i>host bits = 0</span></div>
+        <div class="grid-2">
+          <div class="note"><strong>Prefix:</strong> <code>/26</code> means that the first 26 bits form the network prefix; the remaining <code>32 − 26 = 6</code> bits form the host part.</div>
+          <div class="note success"><strong>Subnet mask:</strong> in a bitwise AND operation, a mask bit of <code>1</code> retains the corresponding IP bit and a mask bit of <code>0</code> produces <code>0</code>. The result is the network ID.</div>
+        </div>
+        <p class="note warning"><strong>Ordinary IPv4 subnet:</strong> usable hosts = <code>2<sup>host bits</sup> − 2</code>. The all-zero host part is the network address and the all-one host part is the broadcast address.</p>
+      </div>
+    </section>
+
+    <section class="section" id="compare">
+      <header class="section-head"><span class="section-no">03 · SAME NETWORK?</span><h2>Are two IP addresses on the same network?</h2><p>AND each IP address with the same subnet mask. Equal network IDs mean that the devices are in the same subnet.</p></header>
+      <div class="content">
+        <div class="controls">
+          <div class="field"><label for="ipA">Device A IP</label><input id="ipA" value="192.168.10.34" inputmode="decimal" spellcheck="false"></div>
+          <div class="field"><label for="ipB">Device B IP</label><input id="ipB" value="192.168.10.90" inputmode="decimal" spellcheck="false"></div>
+          <div class="field"><label for="comparePrefix">Common prefix</label><select id="comparePrefix"><option>24</option><option>25</option><option selected>26</option><option>27</option><option>28</option></select></div>
+          <button class="button primary" id="compareButton" type="button">Calculate network IDs</button>
+        </div>
+        <div id="compareOutput" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section" id="lan">
+      <header class="section-head"><span class="section-no">04 · LAN EXAMPLE</span><h2>Network IDs within and between LANs</h2><p><code>192.168.10.0/24</code> has been divided into <code>/26</code> subnets. Select a device to calculate its network ID.</p></header>
+      <div class="content">
+        <div class="lan-map">
+          <div class="lan"><h3>LAN A · Classroom</h3><div class="network-id">192.168.10.0/26</div><div class="devices"><button class="device" data-ip="192.168.10.10">PC A · 192.168.10.10</button><button class="device" data-ip="192.168.10.25">PC B · 192.168.10.25</button><button class="device" data-ip="192.168.10.62">Printer · 192.168.10.62</button></div></div>
+          <div class="router-box"><span class="label">Default gateway</span><strong>Router</strong><code>.1 / .65</code></div>
+          <div class="lan other"><h3>LAN B · Office</h3><div class="network-id">192.168.10.64/26</div><div class="devices"><button class="device" data-ip="192.168.10.70">PC C · 192.168.10.70</button><button class="device" data-ip="192.168.10.90">Server · 192.168.10.90</button><button class="device" data-ip="192.168.10.126">PC D · 192.168.10.126</button></div></div>
+        </div>
+        <div class="device-result note" id="deviceResult">Select a device. Its IP address will be ANDed with <code>255.255.255.192</code> to obtain its network ID.</div>
+        <div class="note warning"><strong>Reserved addresses:</strong> LAN A uses <code>.0</code> as its network address and <code>.63</code> as its broadcast address. LAN B uses <code>.64</code> and <code>.127</code>.</div>
+      </div>
+    </section>
+
+    <section class="section" id="split">
+      <header class="section-head"><span class="section-no">05 · SPLIT THE NETWORK</span><h2>Divide a /24 network</h2><p>Borrowing host bits creates more subnets but leaves fewer host addresses in each subnet.</p></header>
+      <div class="content">
+        <div class="split-controls" id="splitButtons"><button class="button" data-prefix="24" aria-pressed="false">One /24</button><button class="button" data-prefix="25" aria-pressed="false">Two /25s</button><button class="button" data-prefix="26" aria-pressed="true">Four /26s</button><button class="button" data-prefix="27" aria-pressed="false">Eight /27s</button></div>
+        <div class="address-bar" id="addressBar" aria-label="Subnet blocks"></div>
+        <div class="note" id="splitExplanation"></div>
+      </div>
+    </section>
+
+    <section class="section" id="tradeoffs">
+      <header class="section-head"><span class="section-no">06 · ADVANTAGES &amp; DISADVANTAGES</span><h2>Evaluate subnetting</h2><p>State the effect and explain why it is useful or problematic.</p></header>
+      <div class="content">
+        <div class="impact">
+          <article class="advantages"><h3>Advantages</h3><ul><li><strong>Less network traffic:</strong> broadcast traffic is restricted to one subnet, reducing congestion and improving performance.</li><li><strong>Improved security:</strong> traffic between subnets can be controlled by a router or firewall, restricting access to sensitive resources.</li><li><strong>Easier management:</strong> devices can be grouped by department or location, making faults easier to locate.</li></ul></article>
+          <article class="disadvantages"><h3>Disadvantages</h3><ul><li><strong>Fewer host addresses:</strong> a <code>/26</code> has 62 usable host addresses, compared with 254 in a <code>/24</code>.</li><li><strong>More administration:</strong> address ranges, subnet masks, gateways and routing must be planned and configured correctly.</li><li><strong>Extra routing:</strong> communication between subnets requires a router or Layer 3 device, adding cost and a possible point of failure.</li></ul></article>
+        </div>
+        <div class="note"><strong>Exam technique:</strong> write a developed point, for example: “Subnetting reduces broadcast traffic because a broadcast is confined to one subnet; this reduces congestion and can improve network performance.”</div>
+      </div>
+    </section>
+
+    <section class="section" id="exam">
+      <header class="section-head"><span class="section-no">07 · AS 9618 EXAM FOCUS</span><h2>What else should you know?</h2><p>Use precise terms and show each stage of a calculation.</p></header>
+      <div class="content">
+        <div class="grid-2">
+          <article class="exam-card"><h3>Address calculations</h3><p>Convert between a prefix and a subnet mask. Calculate the number of host bits and usable host addresses.</p><blockquote><code>/27 → 5 host bits → 32 addresses → 30 usable hosts</code></blockquote></article>
+          <article class="exam-card"><h3>Address ranges</h3><p>Identify the network address, first host, last host and broadcast address.</p><blockquote><code>192.168.10.64/26</code><br>hosts <code>.65–.126</code><br>broadcast <code>.127</code></blockquote></article>
+          <article class="exam-card"><h3>Local delivery or routing</h3><p>Compare the network IDs. Equal IDs allow delivery within the subnet; different IDs require a router or default gateway.</p></article>
+          <article class="exam-card"><h3>Related IPv4 topics</h3><p>Revise private and public addresses, static and dynamic addressing, NAT, and differences between IPv4 and IPv6.</p></article>
+        </div>
+        <h3 style="margin-top:28px">Answering technique</h3>
+        <div class="checklist">
+          <div class="check"><b>01</b><span><strong>Identify:</strong> give the exact technical term, such as <em>network ID</em> or <em>host ID</em>.</span></div>
+          <div class="check"><b>02</b><span><strong>Describe:</strong> state what the item is or does. Example: “The host ID uniquely identifies a device within its subnetwork.”</span></div>
+          <div class="check"><b>03</b><span><strong>Explain:</strong> link cause to effect. Example: “Broadcast traffic is confined to one subnet, reducing network traffic.”</span></div>
+          <div class="check"><b>04</b><span><strong>Show working:</strong> write both AND results when deciding whether two addresses are in the same subnet.</span></div>
+        </div>
+        <div class="note success"><strong>Model sentence:</strong> “A subnet mask is ANDed with an IP address to obtain its network ID. If two devices produce the same network ID using the same mask, they are on the same subnet; otherwise, their packets must be forwarded by a router.”</div>
+      </div>
+    </section>
+
+    <section class="section" id="practice">
+      <header class="section-head"><span class="section-no">08 · PAST-PAPER PRACTICE</span><h2>Cambridge AS 9618 questions</h2><p>Attempt each question before opening the mark-scheme answer.</p></header>
+      <div class="content">
+        <div class="paper-list">
+          <article class="past-paper">
+            <header class="paper-meta"><span>October/November 2022</span><span>9618/13 · Q7(c)(i)</span><span class="marks">[2 marks]</span></header>
+            <div class="question"><p>Local Area Networks (LANs) can be made up of several subnetworks. Give two benefits of dividing a network into subnetworks by subnetting the LAN.</p></div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><p>One mark for each valid benefit, for example:</p><ul><li>Improves security.</li><li>Reduces congestion.</li><li>Allows the network or the number of connected devices to be extended.</li><li>Aids day-to-day management.</li><li>Improves performance.</li></ul></div></details>
+          </article>
+
+          <article class="past-paper">
+            <header class="paper-meta"><span>October/November 2022</span><span>9618/13 · Q7(c)(ii)</span><span class="marks">[2 marks]</span></header>
+            <div class="question">
+              <p>A subnet mask is used when subnetting a LAN. Two devices on the LAN are located in different subnetworks. The IP addresses and corresponding subnet masks are shown.</p>
+              <table class="comparison"><thead><tr><th>IP address</th><th>Subnet mask</th></tr></thead><tbody><tr><td><code>10.10.12.1</code></td><td><code>255.0.0.0</code></td></tr><tr><td><code>192.168.12.4</code></td><td><code>255.255.255.0</code></td></tr></tbody></table>
+              <p>Identify the network ID for <code>10.10.12.1</code> and the host ID for <code>192.168.12.4</code>.</p>
+            </div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><ul><li>Network ID: <code>10</code> [1]</li><li>Host ID: <code>4</code> [1]</li></ul></div></details>
+          </article>
+
+          <article class="past-paper">
+            <header class="paper-meta"><span>May/June 2023</span><span>9618/11 · Q4(d)(ii)</span><span class="marks">[4 marks]</span></header>
+            <div class="question"><p>The network makes use of subnetting. Describe two benefits of subnetting a network.</p></div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><p>Each benefit needs an identification and a linked expansion. Any two developed benefits score four marks. Examples:</p><ul><li>Subnetting reduces network traffic or improves network speed [1] because data stays in its subnet and does not travel as far [1].</li><li>Subnetting improves security [1] because not all devices can access all areas of the network [1].</li><li>Subnetting allows easier maintenance [1] because one subnetwork can be taken down or changed while the rest continues to operate [1].</li></ul></div></details>
+          </article>
+
+          <article class="past-paper">
+            <header class="paper-meta"><span>May/June 2023</span><span>9618/13 · Q2(e)</span><span class="marks">[3 marks]</span></header>
+            <div class="question"><p>One site has split the network into several subnetworks. An IP address in a subnetwork is divided into two parts. Identify and describe the two parts of an IP address in a subnetwork.</p></div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><ul><li>The two parts are the <strong>network ID</strong> and the <strong>host ID</strong>. [1]</li><li>The network ID identifies the subnetwork; devices in the same subnetwork have the same network ID. [1]</li><li>The host ID uniquely identifies a device within that subnetwork. [1]</li></ul></div></details>
+          </article>
+
+          <article class="past-paper">
+            <header class="paper-meta"><span>October/November 2023</span><span>9618/12 · Q7(b)(iii)</span><span class="marks">[4 marks]</span></header>
+            <div class="question"><p>Subnetting can be used to separate a network into logical segments. Describe two other reasons why subnetting is used in a network.</p></div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><p>Each reason needs a linked expansion. Any two developed reasons score four marks. Examples:</p><ul><li>To improve security [1], so that a compromised device does not expose the whole network or so that devices cannot access every segment [1].</li><li>To make network management easier [1], because faults can be isolated more efficiently [1].</li><li>To improve performance or reduce congestion [1], because communication between devices on the same subnet remains within that subnet [1].</li></ul></div></details>
+          </article>
+
+          <article class="past-paper">
+            <header class="paper-meta"><span>October/November 2024</span><span>9618/13 · Q9(d)(ii)</span><span class="marks">[2 marks]</span></header>
+            <div class="question"><p>The LAN uses subnetting. Describe the purpose of subnetting in a network.</p></div>
+            <details><summary>Show mark-scheme answer</summary><div class="mark-answer"><p>Any two mark-scheme points, for example:</p><ul><li>It divides the network into smaller networks. [1]</li><li>It reduces traffic or congestion because traffic travels only through the necessary parts of the network. [1]</li><li>It hides the complexity of the network or allows easier maintenance. [1]</li></ul></div></details>
+          </article>
+        </div>
+        <p class="source-note">Verified question papers: <a href="https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9618_w22_qp_13.pdf" target="_blank" rel="noopener">9618/13/O/N/22</a>, <a href="https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9618_s23_qp_11.pdf" target="_blank" rel="noopener">9618/11/M/J/23</a>, <a href="https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9618_s23_qp_13.pdf" target="_blank" rel="noopener">9618/13/M/J/23</a>, <a href="https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9618_w23_qp_12.pdf" target="_blank" rel="noopener">9618/12/O/N/23</a> and <a href="https://pastpapers.papacambridge.com/directories/CAIE/CAIE-pastpapers/upload/9618_w24_qp_13.pdf" target="_blank" rel="noopener">9618/13/O/N/24</a>. Questions and mark-scheme points are reproduced for study. © UCLES / Cambridge University Press &amp; Assessment.</p>
+      </div>
+    </section>
+  </main>
+  <footer><div class="shell">AS 9618 Subnetting Lab · Exam-focused IPv4 subnetting practice.</div></footer>
+
+  <script>
+    (() => {
+      const $ = (selector) => document.querySelector(selector);
+      const $$ = (selector) => [...document.querySelectorAll(selector)];
+      const prefixes = [24, 25, 26, 27, 28];
+
+      function parseIP(value) {
+        const parts = value.trim().split('.');
+        if (parts.length !== 4 || parts.some(part => !/^(0|[1-9]\d{0,2})$/.test(part) || Number(part) > 255)) {
+          throw new Error('Enter an IPv4 address as four values from 0 to 255, for example 192.168.10.34.');
+        }
+        return parts.reduce((total, part) => ((total << 8) | Number(part)) >>> 0, 0);
+      }
+      function toIP(number) {
+        return [24, 16, 8, 0].map(shift => (number >>> shift) & 255).join('.');
+      }
+      function makeMask(prefix) {
+        return prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+      }
+      function networkOf(address, prefix) {
+        return (address & makeMask(prefix)) >>> 0;
+      }
+      function broadcastOf(address, prefix) {
+        return (networkOf(address, prefix) | (~makeMask(prefix) >>> 0)) >>> 0;
+      }
+      function bitString(number) {
+        return (number >>> 0).toString(2).padStart(32, '0').match(/.{8}/g).join(' ');
+      }
+      function addressInfo(address, prefix) {
+        const network = networkOf(address, prefix);
+        const broadcast = broadcastOf(address, prefix);
+        const total = 2 ** (32 - prefix);
+        return { network, broadcast, total, usable: prefix <= 30 ? total - 2 : null };
+      }
+
+      let currentPrefix = 26;
+      function renderMask() {
+        const mask = makeMask(currentPrefix);
+        const total = 2 ** (32 - currentPrefix);
+        $('#prefixText').textContent = `/${currentPrefix}`;
+        $('#maskText').textContent = toIP(mask);
+        $('#totalText').textContent = total.toLocaleString();
+        $('#usableText').textContent = currentPrefix <= 30 ? (total - 2).toLocaleString() : 'special case';
+        $('#maskBits').innerHTML = Array.from({ length: 32 }, (_, index) => {
+          const classes = ['bit', index < currentPrefix ? 'net' : '', index % 8 === 0 && index > 0 ? 'octet' : '', index === currentPrefix ? 'boundary' : ''].filter(Boolean).join(' ');
+          return `<span class="${classes}" title="Bit ${index + 1}: ${index < currentPrefix ? 'network' : 'host'}">${index < currentPrefix ? 1 : 0}</span>`;
+        }).join('');
+        $$('#prefixButtons button').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.prefix) === currentPrefix)));
+      }
+      $('#prefixButtons').innerHTML = prefixes.map(prefix => `<button class="button" data-prefix="${prefix}" type="button" aria-pressed="${prefix === currentPrefix}">/${prefix}</button>`).join('');
+      $('#prefixButtons').addEventListener('click', event => {
+        const button = event.target.closest('button[data-prefix]');
+        if (!button) return;
+        currentPrefix = Number(button.dataset.prefix);
+        renderMask();
+      });
+
+      function renderComparison() {
+        const output = $('#compareOutput');
+        try {
+          const a = parseIP($('#ipA').value);
+          const b = parseIP($('#ipB').value);
+          const prefix = Number($('#comparePrefix').value);
+          const mask = makeMask(prefix);
+          const netA = networkOf(a, prefix);
+          const netB = networkOf(b, prefix);
+          const same = netA === netB;
+          output.innerHTML = `
+            <table class="and-table">
+              <thead><tr><th>Value</th><th>Dotted decimal</th><th>32-bit binary</th></tr></thead>
+              <tbody>
+                <tr><td>IP A</td><td>${toIP(a)}</td><td class="binary">${bitString(a)}</td></tr>
+                <tr><td>Mask /${prefix}</td><td>${toIP(mask)}</td><td class="binary">${bitString(mask)}</td></tr>
+                <tr><td><strong>A AND mask</strong></td><td><strong>${toIP(netA)}</strong></td><td class="binary">${bitString(netA)}</td></tr>
+                <tr><td>IP B</td><td>${toIP(b)}</td><td class="binary">${bitString(b)}</td></tr>
+                <tr><td>Mask /${prefix}</td><td>${toIP(mask)}</td><td class="binary">${bitString(mask)}</td></tr>
+                <tr><td><strong>B AND mask</strong></td><td><strong>${toIP(netB)}</strong></td><td class="binary">${bitString(netB)}</td></tr>
+              </tbody>
+            </table>
+            <div class="answer-panel ${same ? 'same' : 'different'}">
+              <h3>${same ? 'Same subnet' : 'Different subnets'}</h3>
+              <p>${same ? `Both network IDs are <code>${toIP(netA)}/${prefix}</code>, so the data can be delivered within the local subnet.` : `The network IDs are <code>${toIP(netA)}/${prefix}</code> and <code>${toIP(netB)}/${prefix}</code>, so the packet must be sent to a router or default gateway.`}</p>
+            </div>
+            <div class="route">
+              <div class="node"><strong>Device A</strong><code>${toIP(a)}</code></div><div class="arrow">→</div>
+              ${same ? `<div class="node"><strong>Local LAN</strong><span>No router needed for this delivery</span></div>` : `<div class="node router"><strong>Router</strong><span>forwards between subnets</span></div>`}
+              <div class="arrow">→</div><div class="node"><strong>Device B</strong><code>${toIP(b)}</code></div>
+            </div>`;
+        } catch (error) {
+          output.innerHTML = `<div class="error" role="alert">${error.message}</div>`;
+        }
+      }
+      $('#compareButton').addEventListener('click', renderComparison);
+      $('#comparePrefix').addEventListener('change', renderComparison);
+
+      $$('.device').forEach(button => button.addEventListener('click', () => {
+        $$('.device').forEach(item => item.setAttribute('aria-pressed', 'false'));
+        button.setAttribute('aria-pressed', 'true');
+        const address = parseIP(button.dataset.ip);
+        const info = addressInfo(address, 26);
+        const lanName = toIP(info.network) === '192.168.10.0' ? 'LAN A' : 'LAN B';
+        $('#deviceResult').innerHTML = `<strong>${button.dataset.ip} AND 255.255.255.192 = ${toIP(info.network)}</strong><br>The device belongs to <strong>${lanName}</strong>. Its /26 host range is <code>${toIP(info.network + 1)}–${toIP(info.broadcast - 1)}</code>.`;
+      }));
+
+      function renderSplit(prefix = 26) {
+        const blockSize = 2 ** (32 - prefix);
+        const count = 2 ** (prefix - 24);
+        const borrowed = prefix - 24;
+        $('#addressBar').innerHTML = Array.from({ length: count }, (_, index) => {
+          const start = index * blockSize;
+          const end = start + blockSize - 1;
+          return `<div class="subnet-block"><strong>192.168.10.${start}/${prefix}</strong><span>.${start} – .${end}</span><span>${blockSize - 2} usable hosts</span></div>`;
+        }).join('');
+        $('#splitExplanation').innerHTML = prefix === 24
+          ? `<strong>No borrowed bits.</strong> One subnet, 256 total addresses and 254 ordinary usable host addresses.`
+          : `<strong>Borrow ${borrowed} host bit${borrowed > 1 ? 's' : ''}.</strong> <code>2<sup>${borrowed}</sup> = ${count}</code> subnets; each block has <code>2<sup>${32 - prefix}</sup> = ${blockSize}</code> total addresses and ${blockSize - 2} ordinary usable hosts.`;
+        $$('#splitButtons button').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.prefix) === prefix)));
+      }
+      $('#splitButtons').addEventListener('click', event => {
+        const button = event.target.closest('button[data-prefix]');
+        if (button) renderSplit(Number(button.dataset.prefix));
+      });
+
+      function selfCheck() {
+        const checks = [
+          toIP(makeMask(26)) === '255.255.255.192',
+          toIP(networkOf(parseIP('192.168.10.34'), 26)) === '192.168.10.0',
+          toIP(networkOf(parseIP('192.168.10.90'), 26)) === '192.168.10.64',
+          toIP(broadcastOf(parseIP('192.168.10.90'), 26)) === '192.168.10.127',
+          addressInfo(parseIP('192.168.10.90'), 27).usable === 30
+        ];
+        if (checks.some(result => !result)) throw new Error('Internal subnet calculation check failed.');
+      }
+      selfCheck();
+      renderMask();
+      renderComparison();
+      renderSplit();
+    })();
+  </script>
+</body>
+</html>

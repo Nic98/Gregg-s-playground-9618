@@ -7,7 +7,9 @@ import VectorStudioPage from './pages/VectorStudioPage';
 import PacketJourneyPage from './pages/PacketJourneyPage';
 import ClientLabPage from './pages/ClientLabPage';
 import CsmaCdPage from './pages/CsmaCdPage';
+import SubnettingPage from './pages/SubnettingPage';
 import {
+  subnettingDemoPath,
   csmaDemoPath,
   clientDemoPath,
   vectorDemoPath,
@@ -56,6 +58,7 @@ export default function App() {
         <Route path={packetDemoPath} element={<PacketJourneyPage />} />
         <Route path={clientDemoPath} element={<ClientLabPage />} />
         <Route path={csmaDemoPath} element={<CsmaCdPage />} />
+        <Route path={subnettingDemoPath} element={<SubnettingPage />} />
         <Route
           path="vector-drawing-studio"
           element={<Navigate to={vectorDemoPath} replace />}
