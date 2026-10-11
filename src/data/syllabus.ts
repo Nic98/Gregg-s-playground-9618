@@ -1,3 +1,5 @@
+import { structureLessons } from '../demos/arrayStructures';
+
 export interface SyllabusSection {
   id: string;
   title: string;
@@ -144,6 +146,39 @@ export const packetDemoPath = '/chapters/2/packet-frame-journey';
 export const csmaDemoPath = '/chapters/2/csma-cd';
 export const subnettingDemoPath = '/chapters/2/subnetting-lab';
 export const demos: Demo[] = [
+  {
+    id: 'linear-queue',
+    chapterId: 10,
+    sectionId: '10.4',
+    title: 'Linear Queue',
+    description:
+      'Enqueue and dequeue in an array indexed 1 to 5. Track front and rear, test empty and full, and see why released slots become stranded.',
+    concepts: ['FIFO', 'Front and rear', 'Stranded space'],
+    status: 'live',
+    path: structureLessons.linear.path,
+  },
+  {
+    id: 'circular-queue',
+    chapterId: 10,
+    sectionId: '10.4',
+    title: 'Circular Queue',
+    description:
+      'Wrap from index 5 back to 1 and reuse released slots. Watch the item count distinguish empty from full without sacrificing an array slot.',
+    concepts: ['FIFO', 'Wrap-around', 'Empty and full'],
+    status: 'live',
+    path: structureLessons.circular.path,
+  },
+  {
+    id: 'stack',
+    chapterId: 10,
+    sectionId: '10.4',
+    title: 'Stack',
+    description:
+      'Push and pop at the top of an array indexed 1 to 5. Follow the top pointer and explore overflow, underflow and last-in, first-out order.',
+    concepts: ['LIFO', 'Top pointer', 'Push and pop'],
+    status: 'live',
+    path: structureLessons.stack.path,
+  },
   {
     id: 'subnetting',
     chapterId: 2,

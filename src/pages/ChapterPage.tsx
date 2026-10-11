@@ -21,6 +21,7 @@ import {
   sectionAnchor,
   type Demo,
 } from '../data/syllabus';
+import './array-structures.css';
 
 function DemoCard({ demo }: { demo: Demo }) {
   const content = (
@@ -29,7 +30,24 @@ function DemoCard({ demo }: { demo: Demo }) {
         className={`demo-preview demo-preview-${demo.id}`}
         aria-hidden="true"
       >
-        {demo.id === 'subnetting' ? (
+        {['linear-queue', 'circular-queue', 'stack'].includes(demo.id) ? (
+          <>
+            <div
+              className={`adt-preview-slots ${demo.id === 'stack' ? 'adt-preview-stack' : ''}`}
+            >
+              <span>A</span>
+              <span>B</span>
+              <span>C</span>
+            </div>
+            <span>
+              {demo.id === 'stack'
+                ? 'PUSH / POP · TOP · LIFO'
+                : demo.id === 'circular-queue'
+                  ? 'ENQUEUE / DEQUEUE · 5 → 1'
+                  : 'ENQUEUE / DEQUEUE · FIFO'}
+            </span>
+          </>
+        ) : demo.id === 'subnetting' ? (
           <>
             <div className="client-preview-art">
               <Network size={44} />

@@ -8,6 +8,8 @@ import PacketJourneyPage from './pages/PacketJourneyPage';
 import ClientLabPage from './pages/ClientLabPage';
 import CsmaCdPage from './pages/CsmaCdPage';
 import SubnettingPage from './pages/SubnettingPage';
+import ArrayStructurePage from './pages/ArrayStructurePage';
+import { structureLessons } from './demos/arrayStructures';
 import {
   subnettingDemoPath,
   csmaDemoPath,
@@ -59,6 +61,18 @@ export default function App() {
         <Route path={clientDemoPath} element={<ClientLabPage />} />
         <Route path={csmaDemoPath} element={<CsmaCdPage />} />
         <Route path={subnettingDemoPath} element={<SubnettingPage />} />
+        <Route
+          path={structureLessons.linear.path}
+          element={<ArrayStructurePage key="linear" kind="linear" />}
+        />
+        <Route
+          path={structureLessons.circular.path}
+          element={<ArrayStructurePage key="circular" kind="circular" />}
+        />
+        <Route
+          path={structureLessons.stack.path}
+          element={<ArrayStructurePage key="stack" kind="stack" />}
+        />
         <Route
           path="vector-drawing-studio"
           element={<Navigate to={vectorDemoPath} replace />}

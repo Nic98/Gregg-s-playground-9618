@@ -40,6 +40,18 @@ Chapter 2.1 includes `/#/chapters/2/subnetting-lab`. The supplied English HTML l
 
 Its eight sections cover IPv4 structure, masks and prefixes, same-subnet comparisons, LAN examples, dividing a /24, trade-offs, exam focus and past-paper practice with expandable answers. Prefix controls and IP inputs calculate network IDs and address ranges in the browser; no server is required.
 
+## Queues and stack
+
+Chapter **10.4 Introduction to Abstract Data Types (ADT)** includes three separate demonstrations:
+
+- `/#/chapters/10/linear-queue`
+- `/#/chapters/10/circular-queue`
+- `/#/chapters/10/stack`
+
+All three use array indices **1 to 5** and have insertion, removal, empty/full checks, a boundary example, reset-to-empty, pointer labels, removal order and matching pseudocode. The circular queue wraps from 5 to 1. Removed values need not be physically cleared; only live members are displayed.
+
+For both queues, `front` is the next read position and `rear` is the last insertion position (`0` before the first insertion). The linear queue is a non-shifting implementation: empty is `front > rear`, insertion is blocked at `rear = 5`, and released prefix slots are not reused until an explicit reset. When exhausted it can be both empty and unable to enqueue. The circular queue uses `count = 0` and `count = 5`; pointer advance is `(pointer MOD 5) + 1`. All five slots are usable. The stack uses `top = 0` for empty and `top = 5` for full; `top` points to the current item. Zero is only a sentinel, never an array index.
+
 ## Adding a demo
 
 1. Add its page under `src/pages/` and a route in `src/App.tsx`.

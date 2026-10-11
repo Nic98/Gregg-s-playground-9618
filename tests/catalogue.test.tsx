@@ -170,14 +170,16 @@ describe('AS chapter catalogue', () => {
   });
 
   it('shows syllabus sections and a usable return path for an empty chapter', () => {
-    renderRoute('/chapters/10');
+    renderRoute('/chapters/3');
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
-      'Data Types and Structures',
+      'Hardware',
     );
-    expect(screen.getByRole('region', { name: 'Arrays' })).toBeTruthy();
+    expect(
+      screen.getByRole('region', { name: 'Computers and their components' }),
+    ).toBeTruthy();
     expect(
       screen.getByRole('region', {
-        name: 'Introduction to Abstract Data Types (ADT)',
+        name: 'Logic Gates and Logic Circuits',
       }),
     ).toBeTruthy();
     expect(
