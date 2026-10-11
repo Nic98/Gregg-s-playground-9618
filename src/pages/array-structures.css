@@ -114,6 +114,33 @@
 .adt-diagram figcaption > span {
   color: var(--muted);
 }
+.adt-queue .adt-array-layout {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 14px;
+}
+.adt-zero-position {
+  position: relative;
+  text-align: center;
+  color: var(--muted);
+}
+.adt-zero-position small {
+  font-size: 10px;
+  line-height: 1.5;
+}
+.adt-queue .adt-zero-position {
+  margin-top: 76px;
+  padding-right: 14px;
+  border-right: 1px dashed #cbd2c4;
+}
+.adt-queue .adt-zero-position .adt-rear {
+  top: -35px;
+  left: 0;
+  width: calc(100% - 14px);
+}
+.adt-zero-position .adt-rear > span {
+  display: block;
+}
 .adt-pointer-lanes {
   position: relative;
   height: 68px;
@@ -245,13 +272,30 @@
   stroke-dasharray: 8 6;
   animation: adt-loop 0.6s linear 2;
 }
+.adt-stack .adt-array-layout {
+  display: flex;
+  flex-direction: column-reverse;
+  max-width: 320px;
+  margin: 20px auto 0;
+  padding-right: 68px;
+}
 .adt-stack .adt-cells {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 320px;
-  margin: 20px auto 0;
-  padding-right: 68px;
+}
+.adt-stack .adt-zero-position {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #cbd2c4;
+}
+.adt-stack .adt-zero-position .adt-top {
+  top: calc(50% + 7px);
+  transform: translateY(-50%);
 }
 .adt-stack .adt-cell {
   display: grid;
@@ -508,6 +552,16 @@
   .adt-board,
   .adt-console {
     padding: 16px;
+  }
+  .adt-queue .adt-array-layout {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 8px;
+  }
+  .adt-queue .adt-zero-position {
+    padding-right: 8px;
+  }
+  .adt-queue .adt-zero-position .adt-rear {
+    width: calc(100% - 8px);
   }
   .adt-cells {
     gap: 5px;

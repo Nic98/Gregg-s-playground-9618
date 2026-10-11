@@ -39,7 +39,13 @@ describe('queue and stack teaching pages', () => {
       );
       for (let i = 1; i <= 5; i++)
         expect(screen.getByText(`[${i}]`)).toBeInTheDocument();
-      expect(screen.queryByText('[0]')).toBeNull();
+      expect(
+        within(
+          screen.getByRole('complementary', {
+            name: 'Outside array: sentinel position 0',
+          }),
+        ).getByText('[0]'),
+      ).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /Chapter 10/ })).toHaveAttribute(
         'href',
         '/chapters/10#section-10-4',

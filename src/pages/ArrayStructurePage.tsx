@@ -34,70 +34,88 @@ function ArrayDiagram({ state }: { state: StructureState }) {
       <figcaption>
         ARRAY INDEX <span>1-based · capacity 5</span>
       </figcaption>
-      {!stack && (
-        <div className="adt-pointer-lanes" aria-hidden="true">
-          {state.front <= arrayCapacity && (
-            <span
-              className="adt-pointer adt-front"
-              style={{ left: `${(state.front - 1) * 20}%` }}
-            >
-              front ↓
-            </span>
-          )}
-          {state.rear > 0 && (
-            <span
-              className="adt-pointer adt-rear"
-              style={{ left: `${(state.rear - 1) * 20}%` }}
-            >
-              rear ↓
-            </span>
-          )}
-        </div>
-      )}
-      <div className="adt-cells">
-        {indices.map((index) => {
-          const live = occupied.includes(index);
-          const touched = last?.ok && last.index === index;
-          return (
-            <div
-              key={index}
-              className={`adt-cell ${live ? 'is-live' : 'is-unused'} ${touched ? 'is-touched' : ''}`}
-              aria-label={`Index ${index}: ${live ? state.cells[index] : 'unused'}`}
-            >
-              <span className="adt-index">[{index}]</span>
-              <div
-                className="adt-value"
-                key={`${index}-${touched ? state.sequence : 'idle'}`}
-                data-motion={touched ? last.action : undefined}
-              >
-                <strong>{live ? state.cells[index] : '—'}</strong>
-                <small>
-                  {live
-                    ? 'in use'
-                    : state.cells[index] !== null
-                      ? 'released'
-                      : 'unused'}
-                </small>
-              </div>
-              {stack && index === state.top && (
-                <span className="adt-top">← top</span>
+      <div className="adt-array-layout">
+        <aside
+          className="adt-zero-position"
+          aria-label="Outside array: sentinel position 0"
+        >
+          <span className="adt-index">[0]</span>
+          <small>outside array</small>
+          {stack
+            ? state.top === 0 && <span className="adt-top">← top</span>
+            : state.rear === 0 && (
+                <span className="adt-pointer adt-rear">
+                  rear <span>↓</span>
+                </span>
+              )}
+        </aside>
+        <div className="adt-storage">
+          {!stack && (
+            <div className="adt-pointer-lanes" aria-hidden="true">
+              {state.front <= arrayCapacity && (
+                <span
+                  className="adt-pointer adt-front"
+                  style={{ left: `${(state.front - 1) * 20}%` }}
+                >
+                  front ↓
+                </span>
+              )}
+              {state.rear > 0 && (
+                <span
+                  className="adt-pointer adt-rear"
+                  style={{ left: `${(state.rear - 1) * 20}%` }}
+                >
+                  rear ↓
+                </span>
               )}
             </div>
-          );
-        })}
-      </div>
-      {state.kind === 'circular' && (
-        <div className={`adt-wrap ${last?.wrapped ? 'is-wrapping' : ''}`}>
-          <svg
-            viewBox="0 0 500 56"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path d="M450 2V25Q450 40 430 40H70Q50 40 50 25V2M44 10L50 2L56 10" />
-          </svg>
-          <span>5 → 1 · wrap around</span>
+          )}
+          <div className="adt-cells">
+            {indices.map((index) => {
+              const live = occupied.includes(index);
+              const touched = last?.ok && last.index === index;
+              return (
+                <div
+                  key={index}
+                  className={`adt-cell ${live ? 'is-live' : 'is-unused'} ${touched ? 'is-touched' : ''}`}
+                  aria-label={`Index ${index}: ${live ? state.cells[index] : 'unused'}`}
+                >
+                  <span className="adt-index">[{index}]</span>
+                  <div
+                    className="adt-value"
+                    key={`${index}-${touched ? state.sequence : 'idle'}`}
+                    data-motion={touched ? last.action : undefined}
+                  >
+                    <strong>{live ? state.cells[index] : '—'}</strong>
+                    <small>
+                      {live
+                        ? 'in use'
+                        : state.cells[index] !== null
+                          ? 'released'
+                          : 'unused'}
+                    </small>
+                  </div>
+                  {stack && index === state.top && (
+                    <span className="adt-top">← top</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {state.kind === 'circular' && (
+            <div className={`adt-wrap ${last?.wrapped ? 'is-wrapping' : ''}`}>
+              <svg
+                viewBox="0 0 500 56"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M450 2V25Q450 40 430 40H70Q50 40 50 25V2M44 10L50 2L56 10" />
+              </svg>
+              <span>5 → 1 · wrap around</span>
+            </div>
+          )}
         </div>
-      )}
+      </div>
       <div className="adt-sentinel">
         {stack
           ? state.top === 0
