@@ -1,0 +1,1149 @@
+/* Shared by the app and the original, same-origin subnetting lab.
+   Projection is opt-in. Drawing SVGs and game geometry keep their own colours. */
+.projection-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #141b26;
+  color: #fff;
+  border-bottom: 2px solid #91a3ba;
+  font:
+    600 16px/1.4 system-ui,
+    sans-serif;
+}
+.projection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 24px;
+}
+.projection-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.projection-brand > span {
+  color: #dce7f8;
+  font-size: 14px;
+}
+.projection-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  min-height: 40px;
+  border: 2px solid #a5b8ce;
+  border-radius: 7px;
+  background: #253248;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.projection-toolbar button:hover {
+  background: #3c506b;
+}
+.projection-toolbar button[aria-pressed='true'] {
+  background: #ffe066;
+  color: #111820;
+  border-color: #ffe066;
+}
+.projection-toolbar :focus-visible {
+  outline: 3px solid #ffe066;
+  outline-offset: 3px;
+}
+.projection-settings {
+  padding: 18px 24px;
+  border-top: 1px solid #91a3ba;
+  max-height: calc(100dvh - 64px);
+  overflow: auto;
+}
+.projection-settings[hidden] {
+  display: none;
+}
+.projection-settings fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.projection-settings legend {
+  font-weight: 750;
+  margin-bottom: 10px;
+}
+.projection-themes,
+.projection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.projection-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 40px;
+  margin: 18px 0;
+}
+.projection-options label {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  column-gap: 10px;
+  cursor: pointer;
+}
+.projection-options input {
+  width: 22px;
+  height: 22px;
+  accent-color: #ffe066;
+}
+.projection-options small {
+  grid-column: 2;
+  color: #dce7f8;
+  font-size: 14px;
+  margin-top: 5px;
+}
+.projection-settings p {
+  margin: 16px 0;
+  max-width: 960px;
+  font-size: 16px;
+}
+.projection-actions [role='status'] {
+  max-width: 650px;
+}
+.subnetting-page {
+  height: calc(100dvh - var(--projection-toolbar-height, 0px)) !important;
+}
+
+html[data-projection] {
+  --projection-bg: #0e1520;
+  --projection-surface: #192536;
+  --projection-raised: #25364b;
+  --projection-text: #ffffff;
+  --projection-border: #9aaec5;
+  --projection-accent: #ffe066;
+  --projection-accent-text: #111820;
+  --projection-blue: #89ddff;
+  --projection-green: #c6f784;
+  --projection-orange: #ffd19a;
+  --paper: var(--projection-bg);
+  --ink: var(--projection-text);
+  --muted: var(--projection-text);
+  --line: var(--projection-border);
+  --violet: var(--projection-blue);
+  --lime: var(--projection-accent);
+  color-scheme: dark;
+  font-size: 24px;
+  scroll-behavior: auto;
+  scroll-padding-top: calc(var(--projection-toolbar-height, 64px) + 16px);
+}
+html[data-projection='light'] {
+  --projection-bg: #ffffff;
+  --projection-surface: #ffffff;
+  --projection-raised: #edf1f6;
+  --projection-text: #101820;
+  --projection-border: #4e6074;
+  --projection-accent: #153e88;
+  --projection-accent-text: #ffffff;
+  --projection-blue: #003f87;
+  --projection-green: #245500;
+  --projection-orange: #7b3700;
+  color-scheme: light;
+}
+html[data-projection] body {
+  background: var(--projection-bg) !important;
+  color: var(--projection-text) !important;
+  font-size: 24px;
+  font-weight: 500;
+}
+/* Use inherited text on every HTML surface; SVG fill/stroke are intentionally excluded. */
+html[data-projection] body :where(*):not(svg, svg *) {
+  color: inherit !important;
+  border-color: var(--projection-border) !important;
+}
+html[data-projection] :is(p, li, td, th, figcaption, summary) {
+  font-size: 24px !important;
+  line-height: 1.55;
+}
+html[data-projection] :is(small, label, legend, caption) {
+  font-size: 20px !important;
+  line-height: 1.45;
+}
+html[data-projection] :is(h1, h2) {
+  font-size: 40px !important;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+html[data-projection] h3 {
+  font-size: 28px !important;
+  line-height: 1.3;
+}
+html[data-projection] :is(button, select, input, textarea, pre) {
+  font-size: 22px !important;
+}
+html[data-projection] :is(button, select) {
+  min-height: 46px;
+  height: auto;
+  white-space: normal;
+}
+html[data-projection] :is(input, textarea, select) {
+  background: var(--projection-surface) !important;
+  color: var(--projection-text) !important;
+  accent-color: var(--projection-accent);
+}
+html[data-projection]
+  input:not([type='checkbox'], [type='radio'], [type='range'], [type='color']) {
+  min-height: 46px;
+}
+html[data-projection] :is(button, [data-slot='button']) {
+  background: var(--projection-raised) !important;
+  border: 2px solid var(--projection-border);
+}
+html[data-projection]
+  :is(button:disabled, button[aria-disabled='true'], select:disabled) {
+  opacity: 1;
+  border-style: dashed;
+  background: var(--projection-surface) !important;
+  cursor: not-allowed;
+}
+html[data-projection] :focus-visible {
+  outline: 4px solid var(--projection-accent) !important;
+  outline-offset: 4px !important;
+}
+html[data-projection] :is(a:hover, summary:hover) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+html[data-projection]
+  :is(main, section, aside, article, fieldset, figure, nav) {
+  min-width: 0;
+}
+html[data-projection]
+  :is(
+    .course-topbar,
+    .course-footer,
+    .chapter-back,
+    .adt-nav,
+    .subnetting-nav,
+    .course-kicker,
+    .eyebrow,
+    .csma-overline,
+    .csma-event-meta,
+    .csma-animation-scrub,
+    .csma-motion-heading,
+    .csma-channel-heading,
+    .csma-channel-status,
+    .client-activity,
+    .pj-scrubber
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection]
+  :is(.course-main, .csma-main, .client-main, .pj-page, .adt-main) {
+  max-width: 1600px;
+  padding-inline: 24px;
+}
+/* All existing HTML cards and controls, including surfaces with fixed pale colours. */
+html[data-projection]
+  :is(
+    .site-header,
+    .course-sidebar,
+    .course-topbar,
+    .mobile-course-nav,
+    .chapter-card,
+    .chapter-card.has-live,
+    .demo-card,
+    .demo-preview,
+    .demo-status,
+    .demo-concepts > li,
+    .brand-icon,
+    .concept-card,
+    .workbench,
+    .workbench-toolbar,
+    .count-tag,
+    .canvas-panel,
+    .workbench-footer,
+    .selection-name > strong > span,
+    .source-panel,
+    .source-state,
+    .source-error,
+    .syntax-panel,
+    .syntax-panel pre,
+    .object-row,
+    .client-toolbar,
+    .client-game-card,
+    .client-mode-icon,
+    .client-mode-badge,
+    .client-experiments,
+    .client-pipeline li,
+    .client-machine-state,
+    .client-response-breakdown,
+    .client-table-wrap,
+    .client-table-wrap caption,
+    .client-table-wrap thead th,
+    .pj-toolbar,
+    .pj-node,
+    .pj-layer,
+    .pj-stage,
+    .pj-field,
+    .pj-piece,
+    .pj-ethernet-key,
+    .csma-steps li,
+    .csma-step-number,
+    .csma-controls,
+    .csma-event,
+    .csma-rule,
+    .csma-backoff,
+    .csma-wait-card,
+    .csma-history thead th,
+    .csma-limitations,
+    .csma-limitations > header,
+    .csma-limit-topics,
+    .csma-animation-controls,
+    .csma-motion-counters > div,
+    .csma-motion-lesson,
+    .csma-motion-comparison > div,
+    .csma-load-controls,
+    .csma-limit-scope,
+    .csma-range-history thead,
+    .adt-board,
+    .adt-console,
+    .adt-switcher a,
+    .adt-value,
+    .adt-result,
+    .adt-code-grid > div,
+    .subnetting-page,
+    .subnetting-nav
+  ) {
+  background: var(--projection-surface) !important;
+  color: var(--projection-text) !important;
+}
+html[data-projection]
+  :is(
+    button[aria-pressed='true'],
+    [data-slot='button'].bg-accent,
+    .sidebar-chapter.active,
+    .all-chapters.active,
+    .status-live,
+    .concept-card.active,
+    .object-row.selected,
+    .client-pipeline li.active,
+    .pj-node.active,
+    .pj-layer.active,
+    .csma-steps li.current,
+    .adt-switcher a[aria-current],
+    .adt-cell.is-live .adt-value,
+    .adt-code-grid > div.is-active
+  ) {
+  background: var(--projection-accent) !important;
+  color: var(--projection-accent-text) !important;
+  border-color: var(--projection-accent) !important;
+  box-shadow: inset 0 -4px currentColor;
+}
+html[data-projection] :is(.pj-ethernet, .pj-ip, .pj-tcp) {
+  background: var(--projection-raised) !important;
+  border-width: 3px;
+}
+html[data-projection] .pj-ethernet {
+  border-color: var(--projection-green) !important;
+}
+html[data-projection] .pj-ip {
+  border-color: var(--projection-blue) !important;
+}
+html[data-projection] .pj-tcp {
+  border-color: var(--projection-orange) !important;
+}
+html[data-projection] :is(.adt-front, .adt-top) {
+  color: var(--projection-green) !important;
+}
+html[data-projection] .adt-rear {
+  color: var(--projection-blue) !important;
+}
+html[data-projection] .adt-result.is-error {
+  border: 3px solid var(--projection-orange);
+}
+/* These illustrations have a fixed dark canvas in both themes. */
+html[data-projection]
+  :is(
+    .csma-motion-stage,
+    .csma-network,
+    .client-game-screen,
+    .pj-step,
+    .pj-signals,
+    .source-panel textarea
+  ) {
+  --projection-border: #9aaec5;
+  background: #0e1a26 !important;
+  color: #fff !important;
+}
+html[data-projection] .csma-motion-stage figcaption {
+  background: #192d40 !important;
+  color: #fff !important;
+}
+html[data-projection] :is(.csma-motion-heading strong, .csma-channel-status) {
+  background: #d3ff9c !important;
+  color: #102000 !important;
+}
+html[data-projection]
+  :is(.motion-collision, .motion-jam, .motion-failed)
+  .csma-motion-heading
+  strong,
+html[data-projection] :is(.status-collision, .status-jam-signal) {
+  background: #ffc0a5 !important;
+  color: #381200 !important;
+}
+html[data-projection] :is(.status-busy, .status-transmitting) {
+  background: #ffe066 !important;
+  color: #111820 !important;
+}
+html[data-projection] .client-win {
+  background: #d3ff9c !important;
+  color: #102000 !important;
+}
+html[data-projection] .client-offline {
+  background: #0e1a26 !important;
+  color: #fff !important;
+}
+html[data-projection] .svg-frame {
+  color: #101820 !important;
+}
+html[data-projection]
+  :is(
+    .csma-motion-counters span,
+    .csma-motion-comparison small,
+    .csma-motion-presets > span,
+    .csma-delivery span,
+    .csma-window span,
+    .csma-wait-card > span,
+    .csma-step-number
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection] :is(.csma-motion-counters strong, .csma-delivery strong) {
+  font-size: 30px !important;
+}
+html[data-projection] .csma-motion-comparison h4 {
+  font-size: 24px;
+}
+html[data-projection] .csma-step-number {
+  width: 32px;
+  height: 32px;
+}
+html[data-projection] .csma-steps strong {
+  font-size: 22px;
+}
+html[data-projection] .csma-steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html[data-projection] .csma-bus {
+  stroke-width: 6;
+}
+html[data-projection] .csma-drop-line {
+  stroke-width: 4;
+  stroke: #a8c9e1;
+}
+html[data-projection] .csma-node-status {
+  font-size: 16px;
+  fill: #fff;
+}
+html[data-projection] .csma-medium-label {
+  fill: #fff;
+  font-size: 18px;
+}
+html[data-projection] .csma-motion-stage svg > path:nth-of-type(2) {
+  stroke-width: 6;
+}
+html[data-projection]
+  :is(.csma-history, .csma-range-history, .client-table-wrap) {
+  overflow-x: auto;
+}
+html[data-projection]
+  :is(
+    .csma-animation-buttons,
+    .csma-controls,
+    .workbench-toolbar,
+    .client-toolbar,
+    .canvas-bottom
+  ) {
+  flex-wrap: wrap;
+}
+html[data-projection]
+  :is(.client-heading, .studio-heading, .csma-intro, .chapter-title-row) {
+  flex-wrap: wrap;
+}
+html[data-projection]
+  :is(
+    .client-game-card header p,
+    .client-game-score,
+    .client-pipeline span,
+    .client-pipeline strong,
+    .client-setting-label output
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection] .client-mode-badge {
+  white-space: normal;
+  font-size: 18px;
+}
+html[data-projection] .client-experiments {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+html[data-projection] .client-network-switch {
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+}
+html[data-projection]
+  :is(
+    .pj-piece strong,
+    .pj-piece span,
+    .pj-envelope-label,
+    .pj-layer,
+    .pj-node strong,
+    .pj-node small,
+    .pj-field,
+    .pj-field strong,
+    .pj-field span
+  ) {
+  font-size: 22px !important;
+}
+html[data-projection] .pj-workspace {
+  grid-template-columns: 1fr;
+}
+html[data-projection] .pj-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+html[data-projection] .pj-layers > h2 {
+  flex-basis: 100%;
+}
+html[data-projection] .pj-layer {
+  flex: 1 1 220px;
+}
+html[data-projection] .concept-strip {
+  grid-template-columns: 1fr;
+}
+html[data-projection]
+  :is(.concept-title, .concept-title h2, .panel-heading h2) {
+  font-size: 24px !important;
+}
+html[data-projection]
+  :is(
+    .object-row,
+    .property-grid input,
+    .canvas-topline,
+    .canvas-bottom,
+    .zoom-controls output,
+    .status-message,
+    .object-number,
+    .object-name,
+    .selection-name > strong,
+    .count-tag
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection] .editor-grid {
+  grid-template-columns: 290px minmax(0, 1fr);
+}
+html[data-projection] .canvas-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+html[data-projection] .properties-panel {
+  grid-column: 1 / -1;
+  display: block;
+  border-top: 2px solid var(--projection-border);
+}
+html[data-projection] .property-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+html[data-projection] .code-grid {
+  grid-template-columns: 1fr;
+}
+html[data-projection] .source-panel textarea {
+  font-size: 22px !important;
+  min-height: 400px;
+}
+html[data-projection] .adt-workspace {
+  grid-template-columns: 1fr;
+}
+html[data-projection] .adt-metrics {
+  flex-wrap: wrap;
+}
+html[data-projection]
+  :is(
+    .adt-metrics span,
+    .adt-metrics small,
+    .adt-diagram figcaption,
+    .adt-zero-position small,
+    .adt-index,
+    .adt-pointer,
+    .adt-top,
+    .adt-value small,
+    .adt-order > span,
+    .adt-order strong,
+    .adt-checks span,
+    .adt-checks code,
+    .adt-wrap span
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection] .adt-value strong {
+  font-size: 30px !important;
+}
+html[data-projection] .adt-queue .adt-array-layout {
+  grid-template-columns: 100px minmax(0, 1fr);
+}
+html[data-projection] .adt-pointer-lanes {
+  height: 88px;
+}
+html[data-projection] .adt-rear {
+  top: 44px;
+}
+html[data-projection] .adt-queue .adt-zero-position {
+  margin-top: 96px;
+}
+html[data-projection] .adt-stack .adt-array-layout {
+  max-width: 480px;
+  padding-right: 100px;
+}
+html[data-projection] .adt-top {
+  width: 90px;
+}
+html[data-projection] .adt-code-grid {
+  grid-template-columns: 1fr;
+}
+
+/* Compact classroom navigation, with a clear way back to the full lesson. */
+html[data-classroom='true'] .course-shell {
+  grid-template-columns: 1fr;
+}
+html[data-classroom='true'] .course-sidebar {
+  display: none;
+}
+html[data-classroom='true'] .mobile-course-nav {
+  display: block;
+}
+html[data-classroom='true']
+  :is(
+    .course-topbar,
+    .site-header .course-path,
+    .csma-intro,
+    .csma-answer,
+    .csma-footnotes,
+    .csma-limitations > header,
+    .csma-limit-scope
+  ) {
+  display: none;
+}
+html[data-classroom='true'] .site-header {
+  padding: 10px 24px;
+  min-height: 0;
+}
+html[data-classroom='true'] .site-header .brand {
+  display: none;
+}
+html[data-classroom='true'] .csma-main {
+  padding-top: 12px;
+}
+.csma-classroom-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 12px;
+}
+.csma-classroom-nav > strong {
+  margin-right: auto;
+}
+.csma-classroom-nav button {
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 700;
+}
+html[data-classroom='true']
+  .csma-lab[data-classroom-view='steps']
+  .csma-limitations,
+html[data-classroom='true']
+  .csma-lab[data-classroom-view='limitations']
+  .csma-six-step-content {
+  display: none;
+}
+html[data-classroom='true'] .csma-workspace {
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+}
+html[data-classroom='true'] .csma-steps {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+html[data-classroom='true'] .csma-steps small {
+  display: none;
+}
+html[data-classroom='true'] .csma-steps li {
+  padding: 8px;
+}
+html[data-classroom='true'] .csma-limitations {
+  margin-top: 0;
+  scroll-margin-top: calc(var(--projection-toolbar-height, 64px) + 80px);
+}
+html[data-classroom='true'] .csma-limit-topics {
+  padding: 10px;
+}
+html[data-classroom='true'] .csma-limit-topics button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+}
+html[data-classroom='true'] .csma-limit-topics strong {
+  font-size: 20px;
+}
+html[data-classroom='true'] .csma-limit-topics small {
+  display: none;
+}
+html[data-classroom='true'] .csma-limit-experiment {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 12px;
+  align-items: start;
+}
+html[data-classroom='true'] .csma-experiment-options {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+}
+html[data-classroom='true'] .csma-experiment-options summary {
+  cursor: pointer;
+  font-size: 20px !important;
+}
+html[data-classroom='true'] .csma-animation-controls {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  padding: 12px;
+}
+html[data-classroom='true'] .csma-animation-buttons {
+  gap: 8px;
+}
+html[data-classroom='true'] .csma-animation-buttons button {
+  flex: 1 1 auto;
+  font-size: 20px !important;
+}
+html[data-classroom='true'] .csma-animation-buttons label {
+  flex-wrap: wrap;
+  margin-left: 0;
+}
+html[data-classroom='true'] .csma-animation-scrub {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+html[data-classroom='true'] .csma-animation-scrub input {
+  width: 100%;
+  flex-basis: 100%;
+}
+html[data-classroom='true'] .csma-motion-stage {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+html[data-classroom='true'] .csma-motion-stage svg {
+  max-height: 370px;
+}
+html[data-classroom='true'] .csma-motion-heading {
+  padding: 12px 16px 0;
+  font-size: 18px !important;
+}
+html[data-classroom='true'] .csma-motion-stage figcaption {
+  padding: 12px 16px;
+  font-size: 24px !important;
+}
+html[data-classroom='true'] .csma-motion-counters {
+  grid-column: 2;
+  grid-row: 3;
+  grid-template-columns: 1fr;
+  margin: 0;
+  gap: 8px;
+}
+html[data-classroom='true'] .csma-motion-counters > div {
+  padding: 10px 14px;
+  border: 1px solid var(--projection-border);
+}
+html[data-classroom='true'] .csma-motion-counters strong {
+  margin-top: 2px;
+}
+html[data-classroom='true']
+  :is(.csma-motion-lesson, .csma-motion-comparison, .csma-detail) {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+.csma-experiment-options {
+  margin: 18px 0;
+}
+html:not([data-classroom='true']) .csma-experiment-options > summary {
+  display: none;
+}
+
+/* Keep meaningful motion; drop costly decoration and redraw CSMA at 10 fps. */
+html[data-low-load='true'] body :where(*):not(svg, svg *) {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+}
+html[data-low-load='true'] :is(button, a, .chapter-card, .demo-card) {
+  transition: none !important;
+}
+html[data-low-load='true'] .csma-motion-stage [filter] {
+  display: none;
+}
+html[data-low-load='true'] :is(.csma-network, .client-game-screen) * {
+  filter: none !important;
+}
+
+/* The imported subnetting document retains its original source and print style. */
+@media screen {
+  html[data-projection-lab='subnetting'][data-projection] {
+    --page: var(--projection-bg);
+    --paper: var(--projection-surface);
+    --blue: var(--projection-blue);
+    --green: var(--projection-green);
+    --orange: var(--projection-orange);
+    --blue-pale: var(--projection-raised);
+    --green-pale: var(--projection-raised);
+    --orange-pale: var(--projection-raised);
+    --red: var(--projection-orange);
+    --red-pale: var(--projection-raised);
+  }
+  html[data-projection-lab][data-projection]
+    :is(
+      .top,
+      .nav,
+      .card,
+      .metric,
+      .node,
+      .device,
+      .homework-sheet,
+      .past-paper,
+      .past-paper details,
+      .paper-meta,
+      .comparison th,
+      .router-box
+    ) {
+    background: var(--projection-surface) !important;
+    color: var(--projection-text) !important;
+  }
+  html[data-projection-lab][data-projection] .shell {
+    width: calc(100% - 32px);
+    max-width: 1500px;
+  }
+  html[data-projection-lab][data-projection]
+    :is(.label, .metric span, .nav a, .section-no, .eyebrow, .paper-meta) {
+    font-size: 20px !important;
+  }
+  html[data-projection-lab][data-projection] .metric strong {
+    font-size: 24px;
+  }
+  html[data-projection-lab][data-projection]
+    :is(.button.primary, .device[aria-pressed='true']) {
+    background: var(--projection-accent) !important;
+    color: var(--projection-accent-text) !important;
+  }
+  html[data-projection-lab][data-projection] .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection-lab][data-projection] .mask-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+  html[data-projection-lab][data-projection] .lan-map {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection-lab][data-projection] .router-box {
+    min-height: 100px;
+  }
+  html[data-projection-lab][data-projection] .bits {
+    grid-template-columns: repeat(32, 32px);
+    min-width: 1120px;
+  }
+  html[data-projection-lab][data-projection] .bit {
+    font-size: 24px;
+    height: 46px;
+    border-width: 2px;
+  }
+  html[data-projection-lab][data-projection] .bit.net {
+    border-color: var(--projection-blue) !important;
+    color: var(--projection-blue) !important;
+  }
+  html[data-projection-lab][data-projection] .bit:not(.net) {
+    border-color: var(--projection-green) !important;
+    color: var(--projection-green) !important;
+  }
+}
+/* Keep the settings bar compact and independently legible in every theme. */
+html[data-projection] .projection-toolbar {
+  background: #141b26 !important;
+  color: #fff !important;
+  --projection-border: #a5b8ce;
+}
+html[data-projection]
+  .projection-toolbar
+  :is(button, legend, label, p, small, span) {
+  font-size: 20px !important;
+}
+html[data-projection] .projection-toolbar button {
+  background: #253248 !important;
+  color: #fff !important;
+}
+html[data-projection] .projection-toolbar button[aria-pressed='true'] {
+  background: #ffe066 !important;
+  color: #111820 !important;
+}
+html[data-projection] .projection-toolbar input {
+  accent-color: #ffe066;
+}
+html[data-projection] .projection-toolbar :focus-visible {
+  outline-color: #ffe066 !important;
+}
+@media (max-width: 1000px) {
+  html[data-classroom='true'] .csma-limit-experiment {
+    display: flex;
+    flex-direction: column;
+  }
+  html[data-classroom='true'] .csma-limit-experiment > * {
+    width: 100%;
+  }
+  html[data-classroom='true'] .csma-motion-counters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  html[data-projection]
+    :is(.csma-workspace, .csma-backoff-body, .client-games, .client-lesson) {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection] .csma-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  html[data-projection] .course-shell {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection] .course-sidebar {
+    display: none;
+  }
+  html[data-projection] .mobile-course-nav {
+    display: block;
+  }
+}
+@media (max-width: 700px) {
+  .projection-bar {
+    padding-inline: 12px;
+  }
+  .projection-brand > span {
+    display: none;
+  }
+  .projection-settings {
+    padding: 16px 12px;
+  }
+  html[data-projection] body {
+    font-size: 20px;
+  }
+  html[data-projection]
+    :is(main, .course-main, .csma-main, .client-main, .adt-main, .pj-page) {
+    padding-inline: 12px;
+  }
+  html[data-projection] :is(h1, h2) {
+    font-size: 32px !important;
+  }
+  html[data-projection] :is(p, li, td, th, figcaption) {
+    font-size: 20px !important;
+  }
+  html[data-projection]
+    :is(
+      .chapter-grid,
+      .demo-grid,
+      .client-experiments,
+      .csma-motion-comparison,
+      .csma-load-controls,
+      .property-grid,
+      .csma-wait-cards
+    ) {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection] .editor-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  html[data-projection] .canvas-panel {
+    order: 0;
+  }
+  html[data-projection] .csma-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html[data-classroom='true'] .csma-motion-counters {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection] .csma-limit-topics {
+    grid-template-columns: 1fr 1fr;
+  }
+  html[data-projection] :is(.adt-queue .adt-array-layout, .adt-diagram) {
+    overflow-x: auto;
+  }
+  html[data-projection] .adt-queue .adt-array-layout {
+    min-width: 640px;
+  }
+  html[data-projection] .adt-board {
+    overflow-x: auto;
+  }
+  html[data-projection] .adt-diagram figcaption {
+    flex-wrap: wrap;
+  }
+  html[data-projection] .adt-metrics {
+    gap: 16px;
+  }
+  html[data-projection] .pj-route {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection] .pj-node::after {
+    display: none;
+  }
+  html[data-projection] .pj-piece {
+    min-width: 0;
+  }
+  html[data-projection] :is(.pj-envelope, .pj-structure) {
+    padding: 12px;
+  }
+  html[data-projection-lab][data-projection]
+    :is(.mask-summary, .grid-2, .structure) {
+    grid-template-columns: 1fr;
+  }
+  html[data-projection-lab][data-projection] .comparison {
+    display: block;
+    overflow-x: auto;
+  }
+}
+@media print {
+  .projection-toolbar {
+    display: none;
+  }
+}
+
+/* Present the whole active scene within a typical classroom display. */
+html[data-classroom='true'] .csma-lab > .site-header {
+  display: none;
+}
+.csma-classroom-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 20px;
+  margin-right: 10px;
+}
+html[data-classroom='true'] .csma-limit-copy {
+  display: none;
+}
+
+html[data-classroom='true'] .csma-animation-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+html[data-classroom='true'] .csma-animation-buttons > label {
+  display: block;
+  min-width: 0;
+}
+html[data-classroom='true'] .csma-animation-buttons > label > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+html[data-classroom='true'] .csma-animation-buttons select {
+  width: 100%;
+  font-size: 20px !important;
+  padding-inline: 4px;
+}
+
+html[data-classroom='true'] .csma-motion-counters > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 70px;
+}
+html[data-classroom='true'] .csma-motion-counters strong {
+  font-size: 26px !important;
+  text-align: right;
+}
+.csma-playback-more > summary {
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 20px !important;
+}
+.csma-playback-more[open] > button {
+  margin-top: 10px;
+}
+html:not([data-classroom='true']) .csma-playback-more > summary {
+  display: none;
+}
+html[data-projection]
+  :is(
+    .concept-title strong,
+    .property-grid label > span,
+    .colour-property > span,
+    .none-check,
+    .source-state,
+    .source-header,
+    .syntax-tabs,
+    .source-description,
+    .selection-name code,
+    .object-name small,
+    .panel-caption,
+    .trace-controls output
+  ) {
+  font-size: 20px !important;
+}
+html[data-projection] .csma-network figcaption span {
+  font-size: 20px;
+}
+html[data-projection] .csma-channel-heading {
+  flex-wrap: wrap;
+}
+html[data-projection] .csma-network svg {
+  min-height: 280px;
+}
+@media (max-width: 1000px) {
+  html[data-classroom='true'] .csma-motion-stage {
+    order: 2;
+  }
+  html[data-classroom='true'] .csma-motion-counters {
+    order: 3;
+  }
+  html[data-classroom='true']
+    :is(.csma-motion-lesson, .csma-motion-comparison, .csma-detail) {
+    order: 4;
+  }
+}
+html[data-projection-lab][data-projection]
+  :is(.subnet-block, .subnet-block:nth-child(even), .exam-card) {
+  background: var(--projection-raised) !important;
+}
+html[data-projection-lab][data-projection]
+  :is(.subnet-block strong, .subnet-block span, .impact span) {
+  font-size: 22px !important;
+}
+html[data-projection]
+  :is(.adt-result, .adt-sentinel, .adt-switcher a, .adt-nav > span) {
+  font-size: 20px !important;
+}
+html[data-projection]
+  .csma-motion-stage
+  :is([stroke='#416171'], [stroke='#354b59'], [stroke='#294453']) {
+  stroke: #8ba9bd;
+}
+html[data-projection]
+  .csma-motion-stage
+  :is([font-size='16'], [font-size='17'], [font-size='18']) {
+  font-size: 22px;
+}
+html[data-projection]
+  .csma-motion-stage
+  :is([font-size='14'], [font-size='15']) {
+  font-size: 20px;
+}
+html[data-projection] .csma-motion-stage [font-size='20'] {
+  font-size: 24px;
+}

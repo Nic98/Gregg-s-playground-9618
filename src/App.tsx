@@ -18,6 +18,10 @@ import {
   packetDemoPath,
 } from './data/syllabus';
 import './catalogue.css';
+import {
+  ProjectionProvider,
+  ProjectionToolbar,
+} from './components/ProjectionSettings';
 
 function RoutePosition() {
   const location = useLocation();
@@ -48,7 +52,8 @@ function NotFound() {
 }
 export default function App() {
   return (
-    <>
+    <ProjectionProvider>
+      <ProjectionToolbar />
       <RoutePosition />
       <Routes>
         <Route element={<CourseLayout />}>
@@ -83,6 +88,6 @@ export default function App() {
           element={<Navigate to={`${vectorDemoPath}#code-lab`} replace />}
         />
       </Routes>
-    </>
+    </ProjectionProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { AlertTriangle, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { chooseBackoff } from '../demos/csma';
@@ -16,6 +16,7 @@ import {
   useAnimation,
 } from './CsmaAnimation';
 import './csma-limitations.css';
+import { useProjection } from './ProjectionSettings';
 
 const topics = [
   ['Long waits', 'Watch the same frames wait, retry and collide again.'],
@@ -23,6 +24,24 @@ const topics = [
   ['No priority', 'Watch a routine frame arrive before an urgent one.'],
   ['More traffic', 'Watch queues grow as more devices compete.'],
 ] as const;
+function ExperimentOptions({ children }: { children: ReactNode }) {
+  const { enabled, classroom } = useProjection();
+  const [expanded, setExpanded] = useState(false);
+  const compact = enabled && classroom;
+  return (
+    <details className="csma-experiment-options" open={!compact || expanded}>
+      <summary
+        onClick={(event) => {
+          event.preventDefault();
+          setExpanded(!expanded);
+        }}
+      >
+        Experiment settings
+      </summary>
+      {children}
+    </details>
+  );
+}
 function Counters({ values }: { values: [string, string | number][] }) {
   return (
     <div className="csma-motion-counters">
@@ -125,27 +144,29 @@ function ContentionExperiment({
             : 'Press Play. Follow the collision → jam → wait loop, then compare it with a successful retry.'}
         </p>
       </div>
-      <div className="csma-motion-presets">
-        <Button
-          variant={recover ? 'outline' : 'accent'}
-          onClick={() => {
-            setRecover(false);
-            setRun(run + 1);
-          }}
-        >
-          Repeat collisions
-        </Button>
-        <Button
-          variant={recover ? 'accent' : 'outline'}
-          onClick={() => {
-            setRecover(true);
-            setRun(run + 1);
-          }}
-        >
-          Compare: different waits
-        </Button>
-        <span>Changing the example starts a fresh replay.</span>
-      </div>
+      <ExperimentOptions>
+        <div className="csma-motion-presets">
+          <Button
+            variant={recover ? 'outline' : 'accent'}
+            onClick={() => {
+              setRecover(false);
+              setRun(run + 1);
+            }}
+          >
+            Repeat collisions
+          </Button>
+          <Button
+            variant={recover ? 'accent' : 'outline'}
+            onClick={() => {
+              setRecover(true);
+              setRun(run + 1);
+            }}
+          >
+            Compare: different waits
+          </Button>
+          <span>Changing the example starts a fresh replay.</span>
+        </div>
+      </ExperimentOptions>
       <ContentionReplay
         key={`${recover}-${run}`}
         mode={mode}
@@ -202,28 +223,30 @@ function NoPriority({ autoPlay }: { autoPlay: boolean }) {
           first, then swap the urgent label.
         </p>
       </div>
-      <div className="csma-motion-presets">
-        <label className="csma-urgent-control" htmlFor="csma-urgent">
-          Urgent device
-          <select
-            id="csma-urgent"
-            value={urgent}
-            onChange={(event) => setUrgent(event.target.value)}
+      <ExperimentOptions>
+        <div className="csma-motion-presets">
+          <label className="csma-urgent-control" htmlFor="csma-urgent">
+            Urgent device
+            <select
+              id="csma-urgent"
+              value={urgent}
+              onChange={(event) => setUrgent(event.target.value)}
+            >
+              <option value="A">Device A</option>
+              <option value="B">Device B</option>
+            </select>
+          </label>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setWaits(chooseBackoff(3, Math.random(), Math.random()));
+              setRun(run + 1);
+            }}
           >
-            <option value="A">Device A</option>
-            <option value="B">Device B</option>
-          </select>
-        </label>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setWaits(chooseBackoff(3, Math.random(), Math.random()));
-            setRun(run + 1);
-          }}
-        >
-          <Shuffle size={16} /> New random waits
-        </Button>
-      </div>
+            <Shuffle size={16} /> New random waits
+          </Button>
+        </div>
+      </ExperimentOptions>
       <PriorityReplay
         key={run}
         a={waits.a}
@@ -446,45 +469,51 @@ function MoreTraffic({ autoPlay }: { autoPlay: boolean }) {
           up while all devices compete for the same wire.
         </p>
       </div>
-      <div className="csma-load-controls">
-        <label htmlFor="csma-load-devices">
-          Active devices <strong>{config.count}</strong>
-          <input
-            id="csma-load-devices"
-            type="range"
-            min="2"
-            max="24"
-            value={config.count}
-            onChange={(event) => update({ count: Number(event.target.value) })}
-          />
-        </label>
-        <label htmlFor="csma-load-rate">
-          Traffic per device <strong>{config.rate} frames / 100 ticks</strong>
-          <input
-            id="csma-load-rate"
-            type="range"
-            min="1"
-            max="12"
-            value={config.rate}
-            onChange={(event) => update({ rate: Number(event.target.value) })}
-          />
-        </label>
-      </div>
-      <div className="csma-motion-presets">
-        <Button
-          variant="outline"
-          onClick={() => update({ count: 2, rate: 2, seed: config.seed + 1 })}
-        >
-          Quiet network
-        </Button>
-        <Button
-          variant="accent"
-          onClick={() => update({ count: 20, rate: 12, seed: config.seed + 1 })}
-        >
-          Busy network
-        </Button>
-        <span>Changing a setting starts a fresh animated run.</span>
-      </div>
+      <ExperimentOptions>
+        <div className="csma-load-controls">
+          <label htmlFor="csma-load-devices">
+            Active devices <strong>{config.count}</strong>
+            <input
+              id="csma-load-devices"
+              type="range"
+              min="2"
+              max="24"
+              value={config.count}
+              onChange={(event) =>
+                update({ count: Number(event.target.value) })
+              }
+            />
+          </label>
+          <label htmlFor="csma-load-rate">
+            Traffic per device <strong>{config.rate} frames / 100 ticks</strong>
+            <input
+              id="csma-load-rate"
+              type="range"
+              min="1"
+              max="12"
+              value={config.rate}
+              onChange={(event) => update({ rate: Number(event.target.value) })}
+            />
+          </label>
+        </div>
+        <div className="csma-motion-presets">
+          <Button
+            variant="outline"
+            onClick={() => update({ count: 2, rate: 2, seed: config.seed + 1 })}
+          >
+            Quiet network
+          </Button>
+          <Button
+            variant="accent"
+            onClick={() =>
+              update({ count: 20, rate: 12, seed: config.seed + 1 })
+            }
+          >
+            Busy network
+          </Button>
+          <span>Changing a setting starts a fresh animated run.</span>
+        </div>
+      </ExperimentOptions>
       <TrafficReplay
         key={`${config.count}-${config.rate}-${config.seed}`}
         {...config}

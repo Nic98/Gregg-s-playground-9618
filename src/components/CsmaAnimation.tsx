@@ -1,26 +1,39 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
 import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SceneBeat } from '../demos/csmaStories';
 import './csma-animation.css';
+import { useProjection } from './ProjectionSettings';
+
+export const PlaybackVisibility = createContext(true);
 
 export function useAnimation(duration: number, autoPlay = false) {
+  const { enabled, lowLoad } = useProjection();
+  const visible = useContext(PlaybackVisibility);
   const [elapsed, setElapsed] = useState(0);
   const [playing, setPlaying] = useState(
     () =>
       autoPlay &&
       !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
   );
-  const [speed, setSpeed] = useState(1);
-  const active = playing && elapsed < duration;
+  const [chosenSpeed, setSpeed] = useState<number | null>(null);
+  const speed = chosenSpeed ?? (enabled ? 0.5 : 1);
+  const active = playing && visible && elapsed < duration;
+  const frameMs = enabled && lowLoad ? 100 : 33;
   useEffect(() => {
     if (!active) return;
     const timer = window.setInterval(
-      () => setElapsed((time) => Math.min(duration, time + 33 * speed)),
-      33,
+      () => setElapsed((time) => Math.min(duration, time + frameMs * speed)),
+      frameMs,
     );
     return () => window.clearInterval(timer);
-  }, [active, duration, speed]);
+  }, [active, duration, speed, frameMs]);
   return {
     elapsed,
     active,
@@ -52,25 +65,34 @@ export function AnimationControls({
   next: number;
   children?: ReactNode;
 }) {
+  const { enabled, classroom } = useProjection();
+  const compact = enabled && classroom;
+  const [expanded, setExpanded] = useState(false);
   return (
     <div className="csma-animation-controls">
       <div className="csma-animation-buttons">
         <Button variant="accent" onClick={clock.toggle}>
           {clock.active ? <Pause size={17} /> : <Play size={17} />}
-          {clock.active ? 'Pause animation' : 'Play animation'}
+          {clock.active
+            ? compact
+              ? 'Pause'
+              : 'Pause animation'
+            : compact
+              ? 'Play'
+              : 'Play animation'}
         </Button>
         <Button
           variant="outline"
           onClick={() => clock.seek(next)}
           disabled={clock.elapsed >= duration}
         >
-          <SkipForward size={16} /> Step forward
+          <SkipForward size={16} /> {compact ? 'Step' : 'Step forward'}
         </Button>
         <Button variant="outline" onClick={clock.replay}>
           <RotateCcw size={16} /> Replay
         </Button>
         <label>
-          Animation speed
+          <span>Animation speed</span>
           <select
             value={clock.speed}
             onChange={(event) => clock.setSpeed(Number(event.target.value))}
@@ -80,20 +102,30 @@ export function AnimationControls({
             <option value={2}>Fast · 2×</option>
           </select>
         </label>
-        {children}
       </div>
-      <label className="csma-animation-scrub">
-        Replay timeline
-        <input
-          type="range"
-          aria-label="Animation timeline"
-          min={0}
-          max={duration}
-          step={1}
-          value={clock.elapsed}
-          onChange={(event) => clock.seek(Number(event.target.value))}
-        />
-      </label>
+      <details className="csma-playback-more" open={!compact || expanded}>
+        <summary
+          onClick={(event) => {
+            event.preventDefault();
+            setExpanded(!expanded);
+          }}
+        >
+          Timeline & shortcuts
+        </summary>
+        {children}
+        <label className="csma-animation-scrub">
+          Replay timeline
+          <input
+            type="range"
+            aria-label="Animation timeline"
+            min={0}
+            max={duration}
+            step={1}
+            value={clock.elapsed}
+            onChange={(event) => clock.seek(Number(event.target.value))}
+          />
+        </label>
+      </details>
     </div>
   );
 }
@@ -487,7 +519,10 @@ export function NetworkAnimation({
           {delivered}
         </text>
         <text x="930" y="324" fill="#b9ccd9" fontSize="16" textAnchor="middle">
-          frames arrived
+          <tspan x="930">frames</tspan>
+          <tspan x="930" dy="24">
+            arrived
+          </tspan>
         </text>
       </svg>
       <figcaption>

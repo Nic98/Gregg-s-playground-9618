@@ -2,6 +2,16 @@
 
 A standalone classroom demo collection organised by the **12 AS chapters of the Cambridge Computer Science 9618, 2027–2029 syllabus**. Each chapter has its own page, with demonstrations grouped under the matching syllabus section. It shares the visual language of Gregg’s IGCSE CS Playground. The separate binary-fractions and P2P classroom projects are not included.
 
+## Projector display
+
+Open **Display settings** in the bar at the top of any page. Choose **Dark contrast** or **Light contrast** for larger text, stronger borders and high-contrast controls. **Standard** restores the original appearance. Preferences are remembered in this browser; switching themes does not reset an experiment.
+
+**Classroom layout** gives the catalogue compact chapter navigation. In CSMA/CD, switch between **Six-step process** and **Disadvantage experiments**. The active animation, playback controls and counters take the main area; expand **Experiment settings** for comparisons and **Timeline & shortcuts** for scrubbing and jumps. Explanations remain available below. Hidden CSMA/CD views suspend their playback.
+
+**Low-load animations** removes decorative shadows and glow and redraws CSMA/CD replays at 10 frames per second, preserving their playback speed and simulation results. Projection defaults to 0.5× for replays and Slow for the six-step process unless a speed has already been selected. Fullscreen is available where the browser supports it.
+
+The shared `public/projection.css` also styles the embedded subnetting lab without changing its original HTML, current inputs or printed student copy. The standalone “Open in new tab” version retains the original lab appearance. Vector drawings and the game maze keep their content colours.
+
 ## Course catalogue
 
 The homepage and chapter navigation separate the two AS papers:

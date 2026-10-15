@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -32,6 +32,8 @@ import {
 } from '../demos/csma';
 import '../csma-cd.css';
 import CsmaLimitations from '../components/CsmaLimitations';
+import { useProjection } from '../components/ProjectionSettings';
+import { PlaybackVisibility } from '../components/CsmaAnimation';
 
 function EthernetChannel({
   state,
@@ -393,9 +395,16 @@ function BackoffPanel({
 }
 
 export default function CsmaCdPage() {
+  const projection = useProjection();
+  const classroom = projection.enabled && projection.classroom;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const lessonView =
+    location.hash === '#csma-limitations' ? 'limitations' : 'steps';
   const [state, setState] = useState<CsmaState>(() => createCsma());
   const [playing, setPlaying] = useState(false);
-  const [intervalMs, setIntervalMs] = useState(1800);
+  const [chosenInterval, setIntervalMs] = useState<number | null>(null);
+  const intervalMs = chosenInterval ?? (projection.enabled ? 3000 : 1800);
   const terminal = state.phase === 'success' || state.phase === 'failed';
   const blocked = state.phase === 'listen' && state.busy;
   const step = stageIndex(state);
@@ -404,14 +413,20 @@ export default function CsmaCdPage() {
     document.title = 'CSMA/CD · Gregg’s AS Playground';
   }, []);
   useEffect(() => {
-    if (!playing || terminal || blocked) return;
+    if (
+      !playing ||
+      terminal ||
+      blocked ||
+      (classroom && lessonView === 'limitations')
+    )
+      return;
     const timer = window.setTimeout(() => {
       const a = Math.random(),
         b = Math.random();
       setState((current) => advanceCsma(current, a, b));
     }, intervalMs);
     return () => window.clearTimeout(timer);
-  }, [playing, terminal, blocked, intervalMs, state]);
+  }, [playing, terminal, blocked, intervalMs, state, classroom, lessonView]);
   const advance = () => {
     setPlaying(false);
     const a = Math.random(),
@@ -428,10 +443,14 @@ export default function CsmaCdPage() {
       b = Math.random();
     setState((current) => changeWaits(current, a, b, choice));
   };
-  const isPlaying = playing && !terminal && !blocked;
+  const isPlaying =
+    playing &&
+    !terminal &&
+    !blocked &&
+    !(classroom && lessonView === 'limitations');
 
   return (
-    <div className="csma-lab">
+    <div className="csma-lab" data-classroom-view={lessonView}>
       <header className="site-header">
         <Link className="brand" to="/" aria-label="Gregg’s AS Playground home">
           <span className="brand-icon">
@@ -465,136 +484,169 @@ export default function CsmaCdPage() {
             Interactive classroom model
           </span>
         </header>
-        <ol className="csma-steps" aria-label="Six steps of CSMA/CD">
-          {csmaSteps.map((item, index) => (
-            <li
-              key={item.title}
-              aria-current={index === step ? 'step' : undefined}
-              className={`${index === step ? 'current' : ''} ${state.scenario === 'single' && terminal && index > 1 ? 'not-needed' : ''}`}
-            >
-              <span className="csma-step-number">{index + 1}</span>
-              <div>
-                <strong>{item.title}</strong>
-                <small>
-                  {state.scenario === 'single' && terminal && index > 1
-                    ? 'Not needed this time'
-                    : item.hint}
-                </small>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <div className="csma-controls">
-          <div className="csma-scenario">
-            <label htmlFor="csma-scenario">Scenario</label>
-            <select
-              id="csma-scenario"
-              value={state.scenario}
-              onChange={(event) => restart(event.target.value as CsmaScenario)}
-            >
-              <option value="collision">
-                Two senders: collision and recovery
-              </option>
-              <option value="busy">Busy channel: listen and wait</option>
-              <option value="single">One sender: no collision</option>
-            </select>
-          </div>
-          <div className="csma-play-controls">
-            <Button
-              variant="accent"
-              onClick={() => setPlaying(!isPlaying)}
-              disabled={terminal || blocked}
-            >
-              {isPlaying ? <Pause size={17} /> : <Play size={17} />}{' '}
-              {isPlaying ? 'Pause' : 'Play'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={advance}
-              disabled={terminal || blocked}
-            >
-              Next event
-              <ArrowRight size={16} />
-            </Button>
-            <Button variant="outline" onClick={() => restart()}>
-              <RotateCcw size={16} />
-              Restart
-            </Button>
-          </div>
-          <div className="csma-speed">
-            <label htmlFor="csma-speed">Playback</label>
-            <select
-              id="csma-speed"
-              value={intervalMs}
-              onChange={(event) => setIntervalMs(Number(event.target.value))}
-            >
-              <option value={3000}>Slow</option>
-              <option value={1800}>Normal</option>
-              <option value={900}>Fast</option>
-            </select>
-          </div>
-        </div>
-        <div className="csma-workspace">
-          <EthernetChannel state={state} playing={isPlaying} />
-          <section
-            className={`csma-event ${state.phase === 'failed' ? 'is-failed' : terminal ? 'is-complete' : ''}`}
-            aria-labelledby="csma-event-title"
+        {classroom && (
+          <nav
+            className="csma-classroom-nav"
+            aria-label="CSMA/CD classroom view"
           >
-            <div className="csma-event-meta">
-              <span>STEP {step + 1} / 6</span>
-              <span>
-                {state.collisions} collision{state.collisions === 1 ? '' : 's'}
-              </span>
-            </div>
-            <div
-              className="csma-event-copy"
-              aria-live="polite"
-              aria-atomic="true"
+            <Link to="/chapters/2#section-2-1" className="csma-classroom-back">
+              <ArrowLeft size={18} /> Networks
+            </Link>
+            <strong>CSMA/CD</strong>
+            <button
+              type="button"
+              aria-pressed={lessonView === 'steps'}
+              onClick={() => navigate('/chapters/2/csma-cd')}
             >
-              <h2 id="csma-event-title">{text.title}</h2>
-              <p>{text.body}</p>
-            </div>
-            <div className="csma-rule">
-              <span>
-                {terminal && state.phase === 'success' ? (
-                  <Check size={19} />
-                ) : (
-                  <Radio size={19} />
-                )}
-              </span>
-              <p>{text.rule}</p>
-            </div>
-            {blocked && (
-              <Button
-                variant="accent"
-                onClick={() =>
-                  setState((current) => ({ ...current, busy: false }))
+              Six-step process
+            </button>
+            <button
+              type="button"
+              aria-pressed={lessonView === 'limitations'}
+              onClick={() => navigate('/chapters/2/csma-cd#csma-limitations')}
+            >
+              Disadvantage experiments
+            </button>
+          </nav>
+        )}
+        <div className="csma-six-step-content">
+          <ol className="csma-steps" aria-label="Six steps of CSMA/CD">
+            {csmaSteps.map((item, index) => (
+              <li
+                key={item.title}
+                aria-current={index === step ? 'step' : undefined}
+                className={`${index === step ? 'current' : ''} ${state.scenario === 'single' && terminal && index > 1 ? 'not-needed' : ''}`}
+              >
+                <span className="csma-step-number">{index + 1}</span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <small>
+                    {state.scenario === 'single' && terminal && index > 1
+                      ? 'Not needed this time'
+                      : item.hint}
+                  </small>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div className="csma-controls">
+            <div className="csma-scenario">
+              <label htmlFor="csma-scenario">Scenario</label>
+              <select
+                id="csma-scenario"
+                value={state.scenario}
+                onChange={(event) =>
+                  restart(event.target.value as CsmaScenario)
                 }
               >
-                Make the channel idle
-                <ArrowRight size={17} />
-              </Button>
-            )}
-            {state.phase === 'wait' && (
-              <p className="csma-event-tip">
-                Try “Force equal waits” below, then advance to see another
-                collision.
-              </p>
-            )}
-            <div className="csma-delivery">
-              <span>Valid frames delivered</span>
-              <strong>
-                {state.delivered.length} / {state.scenario === 'single' ? 1 : 2}
-              </strong>
+                <option value="collision">
+                  Two senders: collision and recovery
+                </option>
+                <option value="busy">Busy channel: listen and wait</option>
+                <option value="single">One sender: no collision</option>
+              </select>
             </div>
-          </section>
+            <div className="csma-play-controls">
+              <Button
+                variant="accent"
+                onClick={() => setPlaying(!isPlaying)}
+                disabled={terminal || blocked}
+              >
+                {isPlaying ? <Pause size={17} /> : <Play size={17} />}{' '}
+                {isPlaying ? 'Pause' : 'Play'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={advance}
+                disabled={terminal || blocked}
+              >
+                Next event
+                <ArrowRight size={16} />
+              </Button>
+              <Button variant="outline" onClick={() => restart()}>
+                <RotateCcw size={16} />
+                Restart
+              </Button>
+            </div>
+            <div className="csma-speed">
+              <label htmlFor="csma-speed">Playback</label>
+              <select
+                id="csma-speed"
+                value={intervalMs}
+                onChange={(event) => setIntervalMs(Number(event.target.value))}
+              >
+                <option value={3000}>Slow</option>
+                <option value={1800}>Normal</option>
+                <option value={900}>Fast</option>
+              </select>
+            </div>
+          </div>
+          <div className="csma-workspace">
+            <EthernetChannel state={state} playing={isPlaying} />
+            <section
+              className={`csma-event ${state.phase === 'failed' ? 'is-failed' : terminal ? 'is-complete' : ''}`}
+              aria-labelledby="csma-event-title"
+            >
+              <div className="csma-event-meta">
+                <span>STEP {step + 1} / 6</span>
+                <span>
+                  {state.collisions} collision
+                  {state.collisions === 1 ? '' : 's'}
+                </span>
+              </div>
+              <div
+                className="csma-event-copy"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <h2 id="csma-event-title">{text.title}</h2>
+                <p>{text.body}</p>
+              </div>
+              <div className="csma-rule">
+                <span>
+                  {terminal && state.phase === 'success' ? (
+                    <Check size={19} />
+                  ) : (
+                    <Radio size={19} />
+                  )}
+                </span>
+                <p>{text.rule}</p>
+              </div>
+              {blocked && (
+                <Button
+                  variant="accent"
+                  onClick={() =>
+                    setState((current) => ({ ...current, busy: false }))
+                  }
+                >
+                  Make the channel idle
+                  <ArrowRight size={17} />
+                </Button>
+              )}
+              {state.phase === 'wait' && (
+                <p className="csma-event-tip">
+                  Try “Force equal waits” below, then advance to see another
+                  collision.
+                </p>
+              )}
+              <div className="csma-delivery">
+                <span>Valid frames delivered</span>
+                <strong>
+                  {state.delivered.length} /{' '}
+                  {state.scenario === 'single' ? 1 : 2}
+                </strong>
+              </div>
+            </section>
+          </div>
+          <p className="csma-timing-note">
+            Time is compressed. Each advance shows a protocol event, not one
+            real time slot. Changing the scenario restarts the run.
+          </p>
+          <BackoffPanel state={state} onChoice={change} />
         </div>
-        <p className="csma-timing-note">
-          Time is compressed. Each advance shows a protocol event, not one real
-          time slot. Changing the scenario restarts the run.
-        </p>
-        <BackoffPanel state={state} onChoice={change} />
-        <CsmaLimitations />
+        <PlaybackVisibility value={!classroom || lessonView === 'limitations'}>
+          <CsmaLimitations />
+        </PlaybackVisibility>
         <section className="csma-answer" aria-labelledby="csma-answer-title">
           <div>
             <p className="csma-overline">EXPLAIN THE PROCESS</p>
